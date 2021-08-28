@@ -1,5 +1,8 @@
 package org.codecraftlabs.octo.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InvoiceResponse {
     private String invoiceId;
     private String message;

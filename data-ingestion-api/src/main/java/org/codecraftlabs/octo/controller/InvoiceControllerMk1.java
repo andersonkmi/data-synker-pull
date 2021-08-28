@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Nonnull;
@@ -18,7 +19,8 @@ import javax.annotation.Nonnull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
-@RestController("/v1")
+@RestController
+@RequestMapping("/v1")
 public class InvoiceControllerMk1 {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceControllerMk1.class);
 
@@ -42,6 +44,7 @@ public class InvoiceControllerMk1 {
 
             // Returns response
             var response = new InvoiceResponse();
+            response.setInvoiceId(invoice.getInvoiceId());
             response.setMessage("Invoice created");
             return ResponseEntity.status(CREATED).body(response);
         } catch (MissingInvoiceIdException exception) {
@@ -52,7 +55,8 @@ public class InvoiceControllerMk1 {
         } catch (ServiceException exception) {
             logger.error("Failed to insert invoice", exception);
             var response = new InvoiceResponse();
-            response.setMessage("Failed to insert invoice");
+            response.setInvoiceId(invoice.getInvoiceId());
+            response.setMessage(exception.getMessage());
             return ResponseEntity.status(BAD_REQUEST).body(response);
         }
     }
@@ -64,6 +68,7 @@ public class InvoiceControllerMk1 {
         converted.setBillToName(request.getBillToName());
         converted.setCompanyName(request.getCompanyName());
         converted.setName(request.getName());
+        converted.setStatus(request.getStatus());
         return converted;
     }
 }

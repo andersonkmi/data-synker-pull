@@ -6,6 +6,7 @@ public class InvoiceVO {
     private double amount;
     private String companyName;
     private String billToName;
+    private String status;
 
     public InvoiceVO(String invoiceId) {
         this.invoiceId = invoiceId;
@@ -45,5 +46,13 @@ public class InvoiceVO {
 
     public String getBillToName() {
         return billToName;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

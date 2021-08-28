@@ -1,13 +1,14 @@
 package org.codecraftlabs.octo.controller;
 
 public class InvoiceRequest {
-    private final String invoiceId;
+    private String invoiceId;
     private String name;
     private double amount;
     private String companyName;
     private String billToName;
+    private String status;
 
-    public InvoiceRequest(String invoiceId) {
+    public void setInvoiceId(String invoiceId) {
         this.invoiceId = invoiceId;
     }
 
@@ -45,5 +46,13 @@ public class InvoiceRequest {
 
     public String getBillToName() {
         return billToName;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
