@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @AutoConfigureMockMvc
 public class OctoApiApplicationTests {
 
+	//$ docker image build -t octo/octodb:latest .
+	//$ docker container run --detach --name octodb --publish 5432:5432 -v postgres-volume:/var/lib/postgresql/data octo/octodb:latest
 	@Test
 	void contextLoads() {
 	}
