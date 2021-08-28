@@ -13,13 +13,18 @@ repositories {
 }
 
 dependencies {
-	//implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	//runtimeOnly 'mysql:mysql-connector-java'
-	//runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	//runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Spring boot related
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:2.5.4'
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.5.4'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.4'
+	runtimeOnly 'mysql:mysql-connector-java:8.0.25'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+	runtimeOnly 'org.postgresql:postgresql:42.2.23.jre7'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.4'
+
+	// others
+	implementation 'com.google.guava:guava:30.1.1-jre'
+
 }
 
 test {
