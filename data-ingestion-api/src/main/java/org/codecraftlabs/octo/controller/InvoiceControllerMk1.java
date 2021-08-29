@@ -1,7 +1,6 @@
 package org.codecraftlabs.octo.controller;
 
 import org.codecraftlabs.octo.controller.util.InvoiceValidator;
-import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
 import org.codecraftlabs.octo.service.InvoiceService;
 import org.codecraftlabs.octo.service.ServiceException;
 import org.slf4j.Logger;
@@ -31,20 +30,20 @@ public class InvoiceControllerMk1 {
     private InvoiceService invoiceService;
 
     @PostMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> insert(@RequestBody Invoice invoice) {
+    public ResponseEntity<InvoiceResponse> insert(@RequestBody BaseInvoice baseInvoice) {
         try {
             // Validations
-            invoiceValidator.validate(invoice);
+            invoiceValidator.validate(baseInvoice);
 
             // Conversion
-            var invoiceVO = convert(invoice);
+            var invoiceVO = InvoiceObjectConverter.convertForInvoiceCreation(baseInvoice);
 
             // Inserts invoice into the data repository
             invoiceService.insert(invoiceVO);
 
             // Returns response
             var response = new InvoiceResponse();
-            response.setInvoiceId(invoice.getInvoiceId());
+            response.setInvoiceId(baseInvoice.getInvoiceId());
             response.setMessage("Invoice created");
             return ResponseEntity.status(CREATED).body(response);
         } catch (MissingInvoiceIdException exception) {
@@ -55,14 +54,14 @@ public class InvoiceControllerMk1 {
         } catch (ServiceException exception) {
             logger.error("Failed to insert invoice", exception);
             var response = new InvoiceResponse();
-            response.setInvoiceId(invoice.getInvoiceId());
+            response.setInvoiceId(baseInvoice.getInvoiceId());
             response.setMessage(exception.getMessage());
             return ResponseEntity.status(BAD_REQUEST).body(response);
         }
     }
 
     @GetMapping("/invoice/{invoiceId}")
-    public ResponseEntity<Invoice> findById(@PathVariable String invoiceId) {
+    public ResponseEntity<BaseInvoice> findById(@PathVariable String invoiceId) {
         try {
             var invoice = invoiceService.findByInvoiceId(invoiceId);
             if (invoice.isEmpty()) {
