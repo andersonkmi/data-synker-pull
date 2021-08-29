@@ -26,5 +26,5 @@ The third and final module is used to retrieve updates and when they are confirm
 Here are the technologies used (so far):
 
 - AWS EC2, RDS (PostgreSQL), SQS
-- Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
-- Docker containers
+- Gradle, Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
+- Docker
