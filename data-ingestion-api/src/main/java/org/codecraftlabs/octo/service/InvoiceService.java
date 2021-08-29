@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class InvoiceService {
@@ -26,6 +27,13 @@ public class InvoiceService {
             logger.error(String.format("Error when inserting a new invoice record: '%s'", invoiceVO.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
         }
+    }
+
+    public Optional<InvoiceVO> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException {
+        if (invoiceId.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.empty();
     }
 
     private Invoice convert(@Nonnull InvoiceVO from, boolean isUpdate) {
