@@ -1,6 +1,6 @@
 # Data synker (pull model)
 
-Small system for POC'ing a data synchronization using Java, Spring Boot and AWS
+Small system for sandboxing a data synchronization using Java, Spring Boot and AWS
 
 ## 1. Intro
 
