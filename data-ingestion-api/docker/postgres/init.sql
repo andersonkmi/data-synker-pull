@@ -2,7 +2,7 @@
 CREATE SEQUENCE invoiceseq;
 
 --- Create all tables ---
-CREATE TABLE invoice (
+CREATE TABLE baseInvoice (
     id bigint not null primary key DEFAULT NEXTVAL('invoiceseq'),
     invoiceid varchar(50) not null unique,
     invoicename varchar(50) not null,
