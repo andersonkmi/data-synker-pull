@@ -1,7 +1,6 @@
 package org.codecraftlabs.octo.controller;
 
 import org.codecraftlabs.octo.controller.util.InvoiceValidator;
-import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
 import org.codecraftlabs.octo.service.InvoiceService;
 import org.codecraftlabs.octo.service.ServiceException;
 import org.slf4j.Logger;

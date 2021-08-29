@@ -1,6 +1,7 @@
 package org.codecraftlabs.octo.controller.util;
 
 import org.codecraftlabs.octo.controller.BaseInvoice;
+import org.codecraftlabs.octo.controller.MissingInvoiceIdException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.CheckForNull;
