@@ -28,3 +28,4 @@ Here are the technologies used (so far):
 - AWS EC2, RDS (PostgreSQL), SQS
 - Gradle, Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
 - Docker
+- Gitflow
