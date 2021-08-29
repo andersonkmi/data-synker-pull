@@ -1,4 +1,4 @@
-package org.codecraftlabs.octo.controller.util;
+package org.codecraftlabs.octo.controller;
 
 public class MissingInvoiceIdException extends Exception {
     public MissingInvoiceIdException(String message) {
