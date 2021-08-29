@@ -1,10 +1,14 @@
-package org.codecraftlabs.octo.repository;
+package org.codecraftlabs.octo.repository.postgres;
 
+import org.codecraftlabs.octo.repository.Invoice;
+import org.codecraftlabs.octo.repository.InvoiceRepository;
+import org.codecraftlabs.octo.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-@Repository("org.codecraftlabs.octo.repository.InvoiceRepositoryPostgres")
+@Repository("org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres")
 public class InvoiceRepositoryPostgres implements InvoiceRepository {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceRepositoryPostgres.class);
 
@@ -44,7 +48,15 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     @Override
     @Transactional(rollbackFor = RepositoryException.class)
     public Optional<Invoice> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException {
-        var statement = "select invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice where invoiceid = ?";
-        return Optional.empty();
+        try {
+            var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice where invoiceid = ?";
+            var result = jdbcTemplate.queryForObject(statement, new InvoicePostgresRowMapper(), invoiceId);
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException exception) {
+            logger.info(String.format("No invoice found with provided id: '%s'", invoiceId));
+            return Optional.empty();
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed to find an invoice by id", exception);
+        }
     }
 }

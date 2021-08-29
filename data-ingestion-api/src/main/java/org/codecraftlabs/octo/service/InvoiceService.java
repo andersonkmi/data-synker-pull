@@ -1,16 +1,16 @@
 package org.codecraftlabs.octo.service;
 
-import org.codecraftlabs.octo.repository.Invoice;
-import org.codecraftlabs.octo.repository.InvoiceRepositoryPostgres;
 import org.codecraftlabs.octo.repository.RepositoryException;
+import org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import java.util.Date;
 import java.util.Optional;
+
+import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 
 @Service
 public class InvoiceService {
@@ -29,25 +29,22 @@ public class InvoiceService {
         }
     }
 
-    public Optional<InvoiceVO> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException {
+    public Optional<InvoiceVO> findByInvoiceId(@Nonnull String invoiceId) throws ServiceException {
         if (invoiceId.isBlank()) {
             return Optional.empty();
         }
-        return Optional.empty();
-    }
 
-    private Invoice convert(@Nonnull InvoiceVO from, boolean isUpdate) {
-        var converted = new Invoice(from.getInvoiceId());
-        converted.setAmount(from.getAmount());
-        converted.setCompanyName(from.getCompanyName());
-        converted.setBillToName(from.getBillToName());
-        converted.setName(from.getName());
-        if (!isUpdate) {
-            converted.setCreationDate(new Date());
+        try {
+            var invoice = invoiceRepositoryPostgres.findByInvoiceId(invoiceId);
+            if (invoice.isEmpty()) {
+                logger.info(String.format("No invoice was found with given invoiceId: '%s'", invoiceId));
+                return Optional.empty();
+            }
+
+            return invoice.map(InvoiceObjectConverter::convert);
+        } catch (RepositoryException exception) {
+            logger.error(String.format("Error when searching for an invoice with invoiceId: '%s'", invoiceId), exception);
+            throw new ServiceException(exception.getMessage(), exception);
         }
-        converted.setLastModificationDate(new Date());
-
-        converted.setStatus(from.getStatus());
-        return converted;
     }
 }

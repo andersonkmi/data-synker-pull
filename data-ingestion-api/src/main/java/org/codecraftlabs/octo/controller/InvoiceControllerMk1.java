@@ -3,19 +3,19 @@ package org.codecraftlabs.octo.controller;
 import org.codecraftlabs.octo.controller.util.InvoiceValidator;
 import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
 import org.codecraftlabs.octo.service.InvoiceService;
-import org.codecraftlabs.octo.service.InvoiceVO;
 import org.codecraftlabs.octo.service.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Nonnull;
-
+import static org.codecraftlabs.octo.controller.InvoiceObjectConverter.convert;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -31,7 +31,7 @@ public class InvoiceControllerMk1 {
     private InvoiceService invoiceService;
 
     @PostMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> insert(@RequestBody InvoiceRequest invoice) {
+    public ResponseEntity<InvoiceResponse> insert(@RequestBody Invoice invoice) {
         try {
             // Validations
             invoiceValidator.validate(invoice);
@@ -61,14 +61,17 @@ public class InvoiceControllerMk1 {
         }
     }
 
-    @Nonnull
-    private InvoiceVO convert(@Nonnull InvoiceRequest request) {
-        var converted = new InvoiceVO(request.getInvoiceId());
-        converted.setAmount(request.getAmount());
-        converted.setBillToName(request.getBillToName());
-        converted.setCompanyName(request.getCompanyName());
-        converted.setName(request.getName());
-        converted.setStatus(request.getStatus());
-        return converted;
+    @GetMapping("/invoice/{invoiceId}")
+    public ResponseEntity<Invoice> findById(@PathVariable String invoiceId) {
+        try {
+            var invoice = invoiceService.findByInvoiceId(invoiceId);
+            if (invoice.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(convert(invoice.get()));
+        } catch (ServiceException exception) {
+            logger.error("Failed to search invoice", exception);
+            return ResponseEntity.status(BAD_REQUEST).build();
+        }
     }
 }

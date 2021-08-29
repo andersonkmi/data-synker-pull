@@ -3,7 +3,7 @@ CREATE SEQUENCE invoiceseq;
 
 --- Create all tables ---
 CREATE TABLE invoice (
-    idnumber bigint not null primary key DEFAULT NEXTVAL('invoiceseq'),
+    id bigint not null primary key DEFAULT NEXTVAL('invoiceseq'),
     invoiceid varchar(50) not null unique,
     invoicename varchar(50) not null,
     companyname varchar (120) not null,

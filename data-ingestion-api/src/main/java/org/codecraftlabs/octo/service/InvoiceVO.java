@@ -1,5 +1,7 @@
 package org.codecraftlabs.octo.service;
 
+import java.util.Date;
+
 public class InvoiceVO {
     private final String invoiceId;
     private String name;
@@ -7,6 +9,8 @@ public class InvoiceVO {
     private String companyName;
     private String billToName;
     private String status;
+    private Date creationDate;
+    private Date lastModificationDate;
 
     public InvoiceVO(String invoiceId) {
         this.invoiceId = invoiceId;
@@ -54,5 +58,21 @@ public class InvoiceVO {
 
     public String getStatus() {
         return status;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setLastModificationDate(Date lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
+    }
+
+    public Date getLastModificationDate() {
+        return lastModificationDate;
     }
 }

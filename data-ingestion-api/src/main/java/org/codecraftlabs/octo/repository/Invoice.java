@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Invoice {
     private long id;
-    private final String invoiceId;
+    private String invoiceId;
     private String name;
     private double amount;
     private String companyName;
@@ -14,16 +14,16 @@ public class Invoice {
     private Date creationDate;
     private Date lastModificationDate;
 
-    public Invoice(String invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
 
     public long getId() {
         return id;
+    }
+
+    public void setInvoiceId(String invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
     public String getInvoiceId() {
@@ -88,7 +88,7 @@ public class Invoice {
 
     @Override
     public int hashCode() {
-        return Objects.hash(invoiceId, id);
+        return Objects.hash(invoiceId, id, status, billToName, companyName, amount, name);
     }
 
     @Override
@@ -103,6 +103,12 @@ public class Invoice {
 
         Invoice instance = (Invoice) other;
 
-        return Objects.equals(this.invoiceId, instance.invoiceId) && (id == instance.id);
+        return Objects.equals(this.invoiceId, instance.invoiceId)
+                && (id == instance.id)
+                && Objects.equals(this.status, instance.status)
+                && Objects.equals(this.billToName, instance.billToName)
+                && Objects.equals(this.companyName, instance.companyName)
+                && Objects.equals(this.name, instance.name)
+                && this.amount == instance.amount;
     }
 }
