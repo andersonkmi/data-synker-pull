@@ -18,6 +18,10 @@ The second module has the responsability to receive and stage the modifications 
 
 The third and final module is used to retrieve updates and when they are confirmed by the external user, this module feeds it back to the first module.
 
+Below you can see a diagram of the original design for this sandbox project:
+
+![](images/DataSyker.jpg)
+
 **For you reader, maybe you may think this project could be useless, but I don't care what you think and the idea is for to practice some AWS services and using different programming languages for such distributed system.**
 
 
