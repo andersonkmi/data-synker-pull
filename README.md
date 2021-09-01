@@ -22,7 +22,7 @@ Below you can see a diagram of the original design for this sandbox project:
 
 ![](images/DataSynker.jpg)
 
-**For you reader, maybe you may think this project could be useless, but I don't care what you think and the idea is for to practice some AWS services and using different programming languages for such distributed system.**
+**This is a sandbox project for practicing some AWS services and using different programming languages for such distributed system.**
 
 
 ## 2. Tech stack
