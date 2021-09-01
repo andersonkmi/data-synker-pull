@@ -2,7 +2,10 @@ package org.codecraftlabs.octo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,11 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InvoiceControllerMk1Tests {
     @Autowired
     private MockMvc mvc;
 
     @Test
+    @Order(1)
     public void createInvoice() throws Exception {
         var invoiceId = "invoice-" + new Date().getTime();
         this.mvc.perform(post("/v1/invoice")
@@ -31,6 +36,7 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
+    @Order(2)
     public void findByInvoiceById() throws Exception {
         var invoiceId = "invoice-" + new Date().getTime();
         this.mvc.perform(post("/v1/invoice")
@@ -44,10 +50,17 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
+    @Order(3)
     public void findByInvoiceByIdNotFound() throws Exception {
         this.mvc.perform(get("/v1/invoice/fake-id")
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Order(4)
+    public void findAll() throws Exception {
+        this.mvc.perform(get("/v1/invoice").contentType(APPLICATION_JSON)).andExpect(status().isOk());
     }
 
     private JSONObject createInvoice(String invoiceId) throws JSONException {

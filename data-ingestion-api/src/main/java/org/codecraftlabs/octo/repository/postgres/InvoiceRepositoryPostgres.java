@@ -14,7 +14,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository("org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres")
 public class InvoiceRepositoryPostgres implements InvoiceRepository {
@@ -58,5 +62,15 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to find an invoice by id", exception);
         }
+    }
+
+    @Override
+    public Optional<Set<Invoice>> listAll() {
+        var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice order by invoiceid";
+        var result = jdbcTemplate.query(statement, new InvoicePostgresRowMapper());
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new HashSet<>(result));
     }
 }
