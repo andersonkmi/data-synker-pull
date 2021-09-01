@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 
@@ -46,5 +49,13 @@ public class InvoiceService {
             logger.error(String.format("Error when searching for an invoice with invoiceId: '%s'", invoiceId), exception);
             throw new ServiceException(exception.getMessage(), exception);
         }
+    }
+
+    public Set<InvoiceVO> listAll() {
+        var results = invoiceRepositoryPostgres.listAll();
+        if (results.isEmpty()) {
+            return Collections.emptySet();
+        }
+        return results.get().stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
     }
 }

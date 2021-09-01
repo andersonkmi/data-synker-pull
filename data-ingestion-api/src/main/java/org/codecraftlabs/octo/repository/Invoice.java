@@ -88,7 +88,7 @@ public class Invoice {
 
     @Override
     public int hashCode() {
-        return Objects.hash(invoiceId, id, status, billToName, companyName, amount, name);
+        return Objects.hash(invoiceId, status, billToName, companyName, amount, name);
     }
 
     @Override
@@ -104,7 +104,6 @@ public class Invoice {
         Invoice instance = (Invoice) other;
 
         return Objects.equals(this.invoiceId, instance.invoiceId)
-                && (id == instance.id)
                 && Objects.equals(this.status, instance.status)
                 && Objects.equals(this.billToName, instance.billToName)
                 && Objects.equals(this.companyName, instance.companyName)
