@@ -31,7 +31,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     @Transactional(rollbackFor = RepositoryException.class)
     public void insert(@Nonnull Invoice invoice) throws RepositoryException {
         try {
-            var statement = "insert into invoice (invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate) values (?, ?, ?, ?, ?, ?, ?, ?)";
+            var statement = "insert into invoice (invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)";
             jdbcTemplate.update(statement,
                     invoice.getInvoiceId(),
                     invoice.getName(),
@@ -53,7 +53,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     @Transactional(rollbackFor = RepositoryException.class)
     public Optional<Invoice> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException {
         try {
-            var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice where invoiceid = ?";
+            var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice where invoiceid = ?";
             var result = jdbcTemplate.queryForObject(statement, new InvoicePostgresRowMapper(), invoiceId);
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException exception) {
@@ -66,7 +66,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
 
     @Override
     public Optional<Set<Invoice>> listAll() {
-        var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice order by invoiceid";
+        var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice order by invoiceid";
         var result = jdbcTemplate.query(statement, new InvoicePostgresRowMapper());
         if (result.isEmpty()) {
             return Optional.empty();
