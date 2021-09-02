@@ -19,8 +19,12 @@ import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 public class InvoiceService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceService.class);
 
-    @Autowired
     private InvoiceRepositoryPostgres invoiceRepositoryPostgres;
+
+    @Autowired
+    public void setInvoiceRepositoryPostgres(InvoiceRepositoryPostgres invoiceRepositoryPostgres) {
+        this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
+    }
 
     public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
         var converted = convert(invoiceVO, false);

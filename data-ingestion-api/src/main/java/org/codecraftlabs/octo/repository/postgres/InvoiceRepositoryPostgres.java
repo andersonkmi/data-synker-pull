@@ -24,8 +24,12 @@ import java.util.stream.Collectors;
 public class InvoiceRepositoryPostgres implements InvoiceRepository {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceRepositoryPostgres.class);
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public InvoiceRepositoryPostgres(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     @Transactional(rollbackFor = RepositoryException.class)

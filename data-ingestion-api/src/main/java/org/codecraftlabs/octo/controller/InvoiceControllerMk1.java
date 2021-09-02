@@ -27,11 +27,18 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class InvoiceControllerMk1 {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceControllerMk1.class);
 
-    @Autowired
     private InvoiceValidator invoiceValidator;
+    private InvoiceService invoiceService;
 
     @Autowired
-    private InvoiceService invoiceService;
+    public void setInvoiceValidator(InvoiceValidator invoiceValidator) {
+        this.invoiceValidator = invoiceValidator;
+    }
+
+    @Autowired
+    public void setInvoiceService(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
+    }
 
     @PostMapping("/invoice")
     public ResponseEntity<InvoiceResponse> insert(@RequestBody BaseInvoice baseInvoice) {
