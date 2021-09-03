@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Date;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -84,6 +85,28 @@ public class InvoiceControllerMk1Tests {
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 
+    @Test
+    @Order(5)
+    public void deleteOneInvoice() throws Exception {
+        var invoiceId = "invoice-" + new Date().getTime();
+        var invoice = createInvoice(invoiceId);
+        this.mvc.perform(post("/v1/invoice")
+                .contentType(APPLICATION_JSON)
+                .content(invoice.toString())
+                .accept(APPLICATION_JSON)).andExpect(status().isCreated());
+
+        this.mvc.perform(delete("/v1/invoice/" + invoiceId)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(99)
+    public void deleteAllInvoices() throws Exception {
+        this.mvc.perform(delete("/v1/invoice")
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
+    }
 
     private JSONObject createInvoice(String invoiceId) throws JSONException {
         JSONObject invoice = new JSONObject();

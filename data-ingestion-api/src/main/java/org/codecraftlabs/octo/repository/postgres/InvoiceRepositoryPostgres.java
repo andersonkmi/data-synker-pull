@@ -79,6 +79,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = RepositoryException.class)
     public void update(@Nonnull Invoice invoice) throws RepositoryException {
         long updatedVersion = invoice.getVersion() + 1;
         var statement = "update invoice set invoicename = ?, companyname = ?, billtoname = ?, amount = ?, status = ?, lastmodificationdate = ?, version = ? where invoiceid = ? and version = ?";
@@ -94,6 +95,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = RepositoryException.class)
     public void delete(@Nonnull String invoiceId) throws RepositoryException {
         var statement = "delete from invoice where invoiceid = ?";
         try {
@@ -103,6 +105,18 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
             }
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to delete invoice", exception);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = RepositoryException.class)
+    public void delete() throws RepositoryException {
+        var statement = "delete from invoice";
+        try {
+            int total = jdbcTemplate.update(statement);
+            logger.info(String.format("Total invoices deleted: %d", total));
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed to delete all invoices", exception);
         }
     }
 }
