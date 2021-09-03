@@ -1,20 +1,25 @@
 package org.codecraftlabs.octo.controller.util;
 
-import org.codecraftlabs.octo.controller.BaseInvoice;
+import org.codecraftlabs.octo.controller.InvalidInvoiceStatusException;
+import org.codecraftlabs.octo.controller.Invoice;
 import org.codecraftlabs.octo.controller.MissingInvoiceIdException;
+import org.codecraftlabs.octo.core.InvoiceStatus;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.CheckForNull;
 
 @Component
-public class InvoiceValidator {
-    public void validate(@CheckForNull BaseInvoice baseInvoice) throws MissingInvoiceIdException {
-        if (baseInvoice == null) {
-            throw new MissingInvoiceIdException("Invoice request is null");
+public final class InvoiceValidator extends BaseInvoiceValidator {
+
+    @Override
+    protected void validateInvoiceStatus(Invoice invoice) throws InvalidInvoiceStatusException {
+        var status = InvoiceStatus.findByCode(invoice.getStatus());
+        if (status.isEmpty()) {
+            return;
         }
 
-        if (baseInvoice.getInvoiceId() == null || baseInvoice.getInvoiceId().isBlank()) {
-            throw new MissingInvoiceIdException("Invoice does not have mandatory id");
+        if (status.get() != InvoiceStatus.CREATED) {
+            throw new InvalidInvoiceStatusException("The invoice has an invalid status");
         }
     }
 }

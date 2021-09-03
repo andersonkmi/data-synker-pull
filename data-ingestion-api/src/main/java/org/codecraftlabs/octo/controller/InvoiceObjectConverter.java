@@ -8,18 +8,23 @@ import static org.codecraftlabs.octo.core.InvoiceStatus.CREATED;
 
 class InvoiceObjectConverter {
     @Nonnull
-    static InvoiceVO convertForInvoiceCreation(@Nonnull BaseInvoice request) {
+    static InvoiceVO convertForInvoice(@Nonnull Invoice request) {
         var converted = new InvoiceVO(request.getInvoiceId());
         converted.setAmount(request.getAmount());
         converted.setBillToName(request.getBillToName());
         converted.setCompanyName(request.getCompanyName());
         converted.setName(request.getName());
-        converted.setStatus(CREATED.code());
+        if (request.getStatus() == null || request.getStatus().isBlank()) {
+            converted.setStatus(CREATED.code());
+        } else {
+            converted.setStatus(request.getStatus());
+        }
+        converted.setVersion(request.getVersion());
         return converted;
     }
 
     @Nonnull
-    static BaseInvoice convert(@Nonnull InvoiceVO from) {
+    static Invoice convert(@Nonnull InvoiceVO from) {
         var converted = new ExtendedInvoice();
         converted.setAmount(from.getAmount());
         converted.setInvoiceId(from.getInvoiceId());
@@ -29,6 +34,7 @@ class InvoiceObjectConverter {
         converted.setBillToName(from.getBillToName());
         converted.setCreationDate(from.getCreationDate());
         converted.setLastModificationDate(from.getLastModificationDate());
+        converted.setVersion(from.getVersion());
         return converted;
     }
 }

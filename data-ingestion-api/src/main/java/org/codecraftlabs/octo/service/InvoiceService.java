@@ -36,6 +36,17 @@ public class InvoiceService {
         }
     }
 
+    public void update(@Nonnull InvoiceVO invoice) throws ServiceException {
+        var converted = convert(invoice, true);
+
+        try {
+            invoiceRepositoryPostgres.update(converted);
+        } catch (RepositoryException exception) {
+            logger.error(String.format("Error when updating invoice: '%s'", invoice.getInvoiceId()), exception);
+            throw new ServiceException(exception.getMessage(), exception);
+        }
+    }
+
     public Optional<InvoiceVO> findByInvoiceId(@Nonnull String invoiceId) throws ServiceException {
         if (invoiceId.isBlank()) {
             return Optional.empty();

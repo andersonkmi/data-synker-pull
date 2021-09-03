@@ -77,4 +77,19 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
         }
         return Optional.of(new HashSet<>(result));
     }
+
+    @Override
+    public void update(@Nonnull Invoice invoice) throws RepositoryException {
+        long updatedVersion = invoice.getVersion() + 1;
+        var statement = "update invoice set invoicename = ?, companyname = ?, billtoname = ?, amount = ?, status = ?, lastmodificationdate = ?, version = ? where invoiceid = ? and version = ?";
+
+        try {
+            int total = jdbcTemplate.update(statement, invoice.getName(), invoice.getCompanyName(), invoice.getBillToName(), invoice.getAmount(), invoice.getStatus(), invoice.getLastModificationDate(), updatedVersion, invoice.getInvoiceId(), invoice.getVersion());
+            if (total == 0) {
+                throw new RepositoryException("The invoice was not updated since it was changed by other process in the meantime");
+            }
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed update invoice", exception);
+        }
+    }
 }

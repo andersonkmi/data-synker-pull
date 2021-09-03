@@ -26,7 +26,7 @@ public class InvoiceControllerMk1Tests {
     private MockMvc mvc;
 
     @Test
-    @Order(1)
+    @Order(0)
     public void createInvoice() throws Exception {
         var invoiceId = "invoice-" + new Date().getTime();
         this.mvc.perform(post("/v1/invoice")
@@ -36,7 +36,7 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
-    @Order(2)
+    @Order(1)
     public void findByInvoiceById() throws Exception {
         var invoiceId = "invoice-" + new Date().getTime();
         this.mvc.perform(post("/v1/invoice")
@@ -50,7 +50,7 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
-    @Order(3)
+    @Order(2)
     public void findByInvoiceByIdNotFound() throws Exception {
         this.mvc.perform(get("/v1/invoice/fake-id")
                         .contentType(APPLICATION_JSON))
@@ -58,10 +58,23 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void findAll() throws Exception {
         this.mvc.perform(get("/v1/invoice").contentType(APPLICATION_JSON)).andExpect(status().isOk());
     }
+
+    @Test
+    @Order(4)
+    public void update() throws Exception {
+        var invoiceId = "invoice-" + new Date().getTime();
+        this.mvc.perform(post("/v1/invoice")
+                .contentType(APPLICATION_JSON)
+                .content(createInvoice(invoiceId).toString())
+                .accept(APPLICATION_JSON)).andExpect(status().isCreated());
+
+
+    }
+
 
     private JSONObject createInvoice(String invoiceId) throws JSONException {
         JSONObject invoice = new JSONObject();
