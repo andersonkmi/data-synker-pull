@@ -1,6 +1,7 @@
 package org.codecraftlabs.octo.repository.postgres;
 
 import org.codecraftlabs.octo.repository.Invoice;
+import org.codecraftlabs.octo.repository.InvoicePatch;
 import org.codecraftlabs.octo.repository.InvoiceRepository;
 import org.codecraftlabs.octo.repository.RepositoryException;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -118,5 +120,63 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to delete all invoices", exception);
         }
+    }
+
+    @Override
+    public void update(@Nonnull InvoicePatch invoicePatch) throws RepositoryException {
+        var statement = buildStatement(invoicePatch);
+        var args = buildArgsList(invoicePatch);
+
+        try {
+            int total = jdbcTemplate.update(statement, args);
+            if (total == 0) {
+                throw new RepositoryException("The invoice was not updated since it was changed by other process in the meantime");
+            }
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed to update invoice", exception);
+        }
+    }
+
+    private Object[] buildArgsList(@Nonnull InvoicePatch invoicePatch) {
+        List<Object> args = new LinkedList<>();
+
+        if (invoicePatch.getName() != null && !invoicePatch.getName().isBlank()) {
+            args.add(invoicePatch.getName());
+        }
+
+        if (invoicePatch.getStatus() != null && invoicePatch.getStatus().isBlank()) {
+            args.add(invoicePatch.getStatus());
+        }
+
+        if (invoicePatch.getAmount() != null) {
+            args.add(invoicePatch.getAmount());
+        }
+
+        args.add(invoicePatch.getVersion() + 1);
+        args.add(invoicePatch.getLastModificationDate());
+        args.add(invoicePatch.getInvoiceId());
+        args.add(invoicePatch.getVersion());
+
+        return args.toArray();
+    }
+
+    private String buildStatement(@Nonnull InvoicePatch invoicePatch) {
+        var buffer = new StringBuilder();
+        buffer.append("update invoice set ");
+
+        if (invoicePatch.getName() != null && !invoicePatch.getName().isBlank()) {
+            buffer.append("invoicename = ?, ");
+        }
+
+        if (invoicePatch.getStatus() != null && invoicePatch.getStatus().isBlank()) {
+            buffer.append("status = ?, ");
+        }
+
+        if (invoicePatch.getAmount() != null) {
+            buffer.append("amount = ?, ");
+        }
+
+        buffer.append("version = ?, lastmodificationdate = ? where invoiceid = ? and version = ?");
+        return buffer.toString();
     }
 }
