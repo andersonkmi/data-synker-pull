@@ -56,7 +56,7 @@ public class InvoiceControllerMk1 {
             invoiceValidator.validate(invoice);
 
             // Conversion
-            var invoiceVO = convertForInvoice(invoice);
+            var invoiceVO = convertForInvoice(invoice, true);
 
             // Inserts invoice into the data repository
             invoiceService.insert(invoiceVO);
@@ -114,7 +114,7 @@ public class InvoiceControllerMk1 {
     public ResponseEntity<InvoiceResponse> update(@RequestBody Invoice invoice) {
         try {
             updateInvoiceValidator.validate(invoice);
-            var converted = convertForInvoice(invoice);
+            var converted = convertForInvoice(invoice, false);
             invoiceService.update(converted);
 
             var response = new InvoiceResponse();

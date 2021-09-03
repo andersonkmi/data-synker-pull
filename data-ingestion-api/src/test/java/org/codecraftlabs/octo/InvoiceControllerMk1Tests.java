@@ -16,6 +16,7 @@ import java.util.Date;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -67,12 +68,20 @@ public class InvoiceControllerMk1Tests {
     @Order(4)
     public void update() throws Exception {
         var invoiceId = "invoice-" + new Date().getTime();
+        var invoice = createInvoice(invoiceId);
         this.mvc.perform(post("/v1/invoice")
                 .contentType(APPLICATION_JSON)
-                .content(createInvoice(invoiceId).toString())
+                .content(invoice.toString())
                 .accept(APPLICATION_JSON)).andExpect(status().isCreated());
 
+        invoice.put("version", 1);
+        invoice.put("companyName", "Modified company");
+        invoice.put("status", "created");
 
+        this.mvc.perform(put("/v1/invoice/" + invoiceId)
+                .contentType(APPLICATION_JSON)
+                .content(invoice.toString())
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 
 

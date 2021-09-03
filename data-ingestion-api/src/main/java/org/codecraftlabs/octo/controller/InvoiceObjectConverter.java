@@ -7,19 +7,21 @@ import javax.annotation.Nonnull;
 import static org.codecraftlabs.octo.core.InvoiceStatus.CREATED;
 
 class InvoiceObjectConverter {
+    private static final int INITIAL_VERSION = 1;
     @Nonnull
-    static InvoiceVO convertForInvoice(@Nonnull Invoice request) {
+    static InvoiceVO convertForInvoice(@Nonnull Invoice request, boolean isCreation) {
         var converted = new InvoiceVO(request.getInvoiceId());
         converted.setAmount(request.getAmount());
         converted.setBillToName(request.getBillToName());
         converted.setCompanyName(request.getCompanyName());
         converted.setName(request.getName());
-        if (request.getStatus() == null || request.getStatus().isBlank()) {
+        if (isCreation) {
             converted.setStatus(CREATED.code());
+            converted.setVersion(INITIAL_VERSION);
         } else {
             converted.setStatus(request.getStatus());
+            converted.setVersion(request.getVersion());
         }
-        converted.setVersion(request.getVersion());
         return converted;
     }
 
