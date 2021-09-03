@@ -154,4 +154,17 @@ public class InvoiceControllerMk1 {
             return ResponseEntity.status(BAD_REQUEST).build();
         }
     }
+
+    @DeleteMapping("/invoice")
+    public ResponseEntity<InvoiceResponse> delete() {
+        try {
+            invoiceService.delete();
+            var response = new InvoiceResponse();
+            response.setMessage("All invoices deleted");
+            return ResponseEntity.ok().body(response);
+        } catch (ServiceException exception) {
+            logger.error("Failed to delete all invoices", exception);
+            return ResponseEntity.status(BAD_REQUEST).build();
+        }
+    }
 }

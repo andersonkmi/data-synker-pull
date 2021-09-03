@@ -84,4 +84,13 @@ public class InvoiceService {
         }
         return results.get().stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
     }
+
+    public void delete() throws ServiceException {
+        try {
+            invoiceRepositoryPostgres.delete();
+        } catch (RepositoryException exception) {
+            logger.error("Error when deleting all invoices", exception);
+            throw new ServiceException(exception.getMessage(), exception);
+        }
+    }
 }
