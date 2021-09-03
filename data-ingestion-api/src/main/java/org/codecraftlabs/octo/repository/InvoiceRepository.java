@@ -16,4 +16,6 @@ public interface InvoiceRepository {
     void delete(@Nonnull String invoiceId) throws RepositoryException;
 
     void delete() throws RepositoryException;
+
+    void update(@Nonnull InvoicePatch invoicePatch) throws RepositoryException;
 }
