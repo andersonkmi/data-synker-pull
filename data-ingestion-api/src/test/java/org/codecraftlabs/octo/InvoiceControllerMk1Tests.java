@@ -16,6 +16,7 @@ import java.util.Date;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -97,6 +98,25 @@ public class InvoiceControllerMk1Tests {
 
         this.mvc.perform(delete("/v1/invoice/" + invoiceId)
                 .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(6)
+    public void patchInvoice() throws Exception {
+        var invoiceId = "invoice-" + new Date().getTime();
+        var invoice = createInvoice(invoiceId);
+        this.mvc.perform(post("/v1/invoice")
+                .contentType(APPLICATION_JSON)
+                .content(invoice.toString())
+                .accept(APPLICATION_JSON)).andExpect(status().isCreated());
+
+        var patchJson = new JSONObject();
+        patchJson.put("amount", 333.99);
+        patchJson.put("version", 1);
+        this.mvc.perform(patch("/v1/invoice/" + invoiceId)
+                .contentType(APPLICATION_JSON)
+                .content(patchJson.toString())
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 

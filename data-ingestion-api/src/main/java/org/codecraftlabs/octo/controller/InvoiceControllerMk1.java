@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -164,6 +165,21 @@ public class InvoiceControllerMk1 {
             return ResponseEntity.ok().body(response);
         } catch (ServiceException exception) {
             logger.error("Failed to delete all invoices", exception);
+            return ResponseEntity.status(BAD_REQUEST).build();
+        }
+    }
+
+    @PatchMapping("/invoice/{invoiceId}")
+    public ResponseEntity<InvoiceResponse> update(@PathVariable String invoiceId, @RequestBody InvoicePatch invoicePatch) {
+        var invoicePatchRequest = convert(invoicePatch, invoiceId);
+        try {
+            invoiceService.update(invoicePatchRequest);
+            var response = new InvoiceResponse();
+            response.setInvoiceId(invoiceId);
+            response.setMessage("Invoice updated");
+            return ResponseEntity.ok().body(response);
+        } catch (ServiceException exception) {
+            logger.error("Failed to updated invoice", exception);
             return ResponseEntity.status(BAD_REQUEST).build();
         }
     }

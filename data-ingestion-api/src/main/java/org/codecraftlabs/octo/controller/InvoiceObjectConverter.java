@@ -1,5 +1,6 @@
 package org.codecraftlabs.octo.controller;
 
+import org.codecraftlabs.octo.service.InvoicePatchVO;
 import org.codecraftlabs.octo.service.InvoiceVO;
 
 import javax.annotation.Nonnull;
@@ -37,6 +38,15 @@ class InvoiceObjectConverter {
         converted.setCreationDate(from.getCreationDate());
         converted.setLastModificationDate(from.getLastModificationDate());
         converted.setVersion(from.getVersion());
+        return converted;
+    }
+
+    @Nonnull
+    static InvoicePatchVO convert(@Nonnull InvoicePatch from, @Nonnull String invoiceId) {
+        var converted = new InvoicePatchVO(invoiceId, from.getVersion());
+        converted.setAmount(from.getAmount());
+        converted.setName(from.getName());
+        converted.setStatus(from.getStatus());
         return converted;
     }
 }
