@@ -12,5 +12,5 @@ CREATE TABLE invoice (
     status varchar(20) not null,
     creationdate timestamp with time zone not null,
     lastmodificationdate timestamp with time zone not null,
-    versioning bigint not null
+    version bigint not null
 );
