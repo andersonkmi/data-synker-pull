@@ -47,6 +47,17 @@ public class InvoiceService {
         }
     }
 
+    public void delete(@Nonnull String invoiceId) throws ServiceException {
+        logger.info(String.format("Deleting invoice: '%s'", invoiceId));
+
+        try {
+            invoiceRepositoryPostgres.delete(invoiceId);
+        } catch (RepositoryException exception) {
+            logger.error(String.format("Error when deleting invoice: '%s'", invoiceId), exception);
+            throw new ServiceException(exception.getMessage(), exception);
+        }
+    }
+
     public Optional<InvoiceVO> findByInvoiceId(@Nonnull String invoiceId) throws ServiceException {
         if (invoiceId.isBlank()) {
             return Optional.empty();

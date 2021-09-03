@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -137,6 +138,20 @@ public class InvoiceControllerMk1 {
             response.setInvoiceId(invoice.getInvoiceId());
             response.setMessage(exception.getMessage());
             return ResponseEntity.status(BAD_REQUEST).body(response);
+        }
+    }
+
+    @DeleteMapping("/invoice/{invoiceId}")
+    public ResponseEntity<InvoiceResponse> delete(@PathVariable String invoiceId) {
+        try {
+            invoiceService.delete(invoiceId);
+            var response = new InvoiceResponse();
+            response.setInvoiceId(invoiceId);
+            response.setMessage("Invoice deleted");
+            return ResponseEntity.ok().body(response);
+        } catch (ServiceException exception) {
+            logger.error("Failed to delete invoice", exception);
+            return ResponseEntity.status(BAD_REQUEST).build();
         }
     }
 }
