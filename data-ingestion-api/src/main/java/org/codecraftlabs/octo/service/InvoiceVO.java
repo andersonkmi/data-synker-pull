@@ -11,6 +11,7 @@ public class InvoiceVO {
     private String status;
     private Date creationDate;
     private Date lastModificationDate;
+    private long version;
 
     public InvoiceVO(String invoiceId) {
         this.invoiceId = invoiceId;
@@ -74,5 +75,13 @@ public class InvoiceVO {
 
     public Date getLastModificationDate() {
         return lastModificationDate;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public long getVersion() {
+        return version;
     }
 }

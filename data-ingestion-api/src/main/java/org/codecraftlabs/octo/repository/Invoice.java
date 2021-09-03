@@ -13,6 +13,7 @@ public class Invoice {
     private String status;
     private Date creationDate;
     private Date lastModificationDate;
+    private long version;
 
     public void setId(long id) {
         this.id = id;
@@ -86,9 +87,17 @@ public class Invoice {
         return status;
     }
 
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(invoiceId, status, billToName, companyName, amount, name);
+        return Objects.hash(invoiceId, status, billToName, companyName, amount, name, version);
     }
 
     @Override
@@ -108,6 +117,7 @@ public class Invoice {
                 && Objects.equals(this.billToName, instance.billToName)
                 && Objects.equals(this.companyName, instance.companyName)
                 && Objects.equals(this.name, instance.name)
-                && this.amount == instance.amount;
+                && this.amount == instance.amount
+                && this.version == instance.version;
     }
 }

@@ -19,6 +19,7 @@ class InvoicePostgresRowMapper implements RowMapper<Invoice> {
         invoice.setStatus(rs.getString("status"));
         invoice.setCreationDate(rs.getTimestamp("creationdate"));
         invoice.setLastModificationDate(rs.getTimestamp("lastmodificationdate"));
+        invoice.setVersion(rs.getLong("version"));
         return invoice;
     }
 }

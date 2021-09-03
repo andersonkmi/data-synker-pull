@@ -2,7 +2,7 @@
 CREATE SEQUENCE invoiceseq;
 
 --- Create all tables ---
-CREATE TABLE baseInvoice (
+CREATE TABLE invoice (
     id bigint not null primary key DEFAULT NEXTVAL('invoiceseq'),
     invoiceid varchar(50) not null unique,
     invoicename varchar(50) not null,
@@ -11,5 +11,6 @@ CREATE TABLE baseInvoice (
     amount numeric (10, 2) not null,
     status varchar(20) not null,
     creationdate timestamp with time zone not null,
-    lastmodificationdate timestamp with time zone not null
+    lastmodificationdate timestamp with time zone not null,
+    versioning bigint not null
 );

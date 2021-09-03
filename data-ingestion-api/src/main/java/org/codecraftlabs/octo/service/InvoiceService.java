@@ -19,8 +19,12 @@ import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 public class InvoiceService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceService.class);
 
-    @Autowired
     private InvoiceRepositoryPostgres invoiceRepositoryPostgres;
+
+    @Autowired
+    public void setInvoiceRepositoryPostgres(InvoiceRepositoryPostgres invoiceRepositoryPostgres) {
+        this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
+    }
 
     public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
         var converted = convert(invoiceVO, false);
@@ -28,6 +32,17 @@ public class InvoiceService {
             invoiceRepositoryPostgres.insert(converted);
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when inserting a new invoice record: '%s'", invoiceVO.getInvoiceId()), exception);
+            throw new ServiceException(exception.getMessage(), exception);
+        }
+    }
+
+    public void update(@Nonnull InvoiceVO invoice) throws ServiceException {
+        var converted = convert(invoice, true);
+
+        try {
+            invoiceRepositoryPostgres.update(converted);
+        } catch (RepositoryException exception) {
+            logger.error(String.format("Error when updating invoice: '%s'", invoice.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
         }
     }
