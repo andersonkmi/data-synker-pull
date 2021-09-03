@@ -47,6 +47,16 @@ public class InvoiceService {
         }
     }
 
+    public void update(@Nonnull InvoicePatchVO invoice) throws ServiceException {
+        var converted = convert(invoice);
+        try {
+            invoiceRepositoryPostgres.update(converted);
+        } catch (RepositoryException exception) {
+            logger.error(String.format("Error when updating invoice: '%s'", invoice.getInvoiceId()), exception);
+            throw new ServiceException(exception.getMessage(), exception);
+        }
+    }
+
     public void delete(@Nonnull String invoiceId) throws ServiceException {
         logger.info(String.format("Deleting invoice: '%s'", invoiceId));
 
