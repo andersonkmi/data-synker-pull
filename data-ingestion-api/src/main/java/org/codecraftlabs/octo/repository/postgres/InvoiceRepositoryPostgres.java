@@ -89,7 +89,20 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
                 throw new RepositoryException("The invoice was not updated since it was changed by other process in the meantime");
             }
         } catch (DataAccessException exception) {
-            throw new RepositoryException("Failed update invoice", exception);
+            throw new RepositoryException("Failed to update invoice", exception);
+        }
+    }
+
+    @Override
+    public void delete(@Nonnull String invoiceId) throws RepositoryException {
+        var statement = "delete from invoice where invoiceid = ?";
+        try {
+            int total = jdbcTemplate.update(statement, invoiceId);
+            if (total == 0) {
+                throw new RepositoryException("The invoice was not deleted since it was deleted by other process in the meantime");
+            }
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed to delete invoice", exception);
         }
     }
 }
