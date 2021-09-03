@@ -11,4 +11,6 @@ public interface InvoiceRepository {
     Optional<Invoice> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException;
 
     Optional<Set<Invoice>> listAll() throws RepositoryException;
+
+    void update(@Nonnull Invoice invoice) throws RepositoryException;
 }

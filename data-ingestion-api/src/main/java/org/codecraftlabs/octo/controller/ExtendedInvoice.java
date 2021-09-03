@@ -5,18 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExtendedInvoice extends BaseInvoice {
-    private String status;
+public class ExtendedInvoice extends Invoice {
     private Date creationDate;
     private Date lastModificationDate;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public Date getCreationDate() {
         return creationDate;

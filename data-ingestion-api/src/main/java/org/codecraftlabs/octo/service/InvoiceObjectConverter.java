@@ -16,6 +16,7 @@ class InvoiceObjectConverter {
         converted.setBillToName(from.getBillToName());
         converted.setCreationDate(from.getCreationDate());
         converted.setLastModificationDate(from.getLastModificationDate());
+        converted.setVersion(from.getVersion());
         return converted;
     }
 
@@ -31,7 +32,7 @@ class InvoiceObjectConverter {
             converted.setCreationDate(new Date());
         }
         converted.setLastModificationDate(new Date());
-
+        converted.setVersion(from.getVersion());
         converted.setStatus(from.getStatus());
         return converted;
     }

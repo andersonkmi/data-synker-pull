@@ -24,14 +24,18 @@ import java.util.stream.Collectors;
 public class InvoiceRepositoryPostgres implements InvoiceRepository {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceRepositoryPostgres.class);
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public InvoiceRepositoryPostgres(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     @Transactional(rollbackFor = RepositoryException.class)
     public void insert(@Nonnull Invoice invoice) throws RepositoryException {
         try {
-            var statement = "insert into invoice (invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate) values (?, ?, ?, ?, ?, ?, ?, ?)";
+            var statement = "insert into invoice (invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)";
             jdbcTemplate.update(statement,
                     invoice.getInvoiceId(),
                     invoice.getName(),
@@ -53,7 +57,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     @Transactional(rollbackFor = RepositoryException.class)
     public Optional<Invoice> findByInvoiceId(@Nonnull String invoiceId) throws RepositoryException {
         try {
-            var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice where invoiceid = ?";
+            var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice where invoiceid = ?";
             var result = jdbcTemplate.queryForObject(statement, new InvoicePostgresRowMapper(), invoiceId);
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException exception) {
@@ -66,11 +70,26 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
 
     @Override
     public Optional<Set<Invoice>> listAll() {
-        var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate from invoice order by invoiceid";
+        var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice order by invoiceid";
         var result = jdbcTemplate.query(statement, new InvoicePostgresRowMapper());
         if (result.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(new HashSet<>(result));
+    }
+
+    @Override
+    public void update(@Nonnull Invoice invoice) throws RepositoryException {
+        long updatedVersion = invoice.getVersion() + 1;
+        var statement = "update invoice set invoicename = ?, companyname = ?, billtoname = ?, amount = ?, status = ?, lastmodificationdate = ?, version = ? where invoiceid = ? and version = ?";
+
+        try {
+            int total = jdbcTemplate.update(statement, invoice.getName(), invoice.getCompanyName(), invoice.getBillToName(), invoice.getAmount(), invoice.getStatus(), invoice.getLastModificationDate(), updatedVersion, invoice.getInvoiceId(), invoice.getVersion());
+            if (total == 0) {
+                throw new RepositoryException("The invoice was not updated since it was changed by other process in the meantime");
+            }
+        } catch (DataAccessException exception) {
+            throw new RepositoryException("Failed update invoice", exception);
+        }
     }
 }
