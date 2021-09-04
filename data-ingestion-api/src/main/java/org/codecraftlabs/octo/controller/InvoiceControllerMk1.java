@@ -102,14 +102,15 @@ public class InvoiceControllerMk1 {
     }
 
     @GetMapping("/invoice")
-    public ResponseEntity<Set<Invoice>> listAll() {
+    public ResponseEntity<ListResponse<Set<Invoice>>> listAll() {
         var results = invoiceService.listAll();
         if (results.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
         var converted = results.stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
-        return ResponseEntity.ok(converted);
+        var response = new ListResponse<>(converted);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/invoice/{invoiceId}")
