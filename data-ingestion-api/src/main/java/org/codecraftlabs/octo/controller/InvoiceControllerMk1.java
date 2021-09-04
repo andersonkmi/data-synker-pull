@@ -113,7 +113,7 @@ public class InvoiceControllerMk1 {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/invoice/{invoiceId}")
+    @PutMapping("/invoice")
     public ResponseEntity<InvoiceResponse> update(@RequestBody Invoice invoice) {
         try {
             updateInvoiceValidator.validate(invoice);
@@ -170,13 +170,13 @@ public class InvoiceControllerMk1 {
         }
     }
 
-    @PatchMapping("/invoice/{invoiceId}")
-    public ResponseEntity<InvoiceResponse> update(@PathVariable String invoiceId, @RequestBody InvoicePatch invoicePatch) {
-        var invoicePatchRequest = convert(invoicePatch, invoiceId);
+    @PatchMapping("/invoice")
+    public ResponseEntity<InvoiceResponse> update(@RequestBody InvoicePatch invoicePatch) {
+        var invoicePatchRequest = convert(invoicePatch);
         try {
             invoiceService.update(invoicePatchRequest);
             var response = new InvoiceResponse();
-            response.setInvoiceId(invoiceId);
+            response.setInvoiceId(invoicePatch.getInvoiceId());
             response.setMessage("Invoice updated");
             return ResponseEntity.ok().body(response);
         } catch (ServiceException exception) {
