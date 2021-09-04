@@ -33,3 +33,4 @@ Here are the technologies used (so far):
 - Gradle, Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
 - Docker
 - Gitflow
+- Swagger (for API specifications)
