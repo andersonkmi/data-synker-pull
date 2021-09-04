@@ -80,7 +80,7 @@ public class InvoiceControllerMk1Tests {
         invoice.put("companyName", "Modified company");
         invoice.put("status", "created");
 
-        this.mvc.perform(put("/v1/invoice/" + invoiceId)
+        this.mvc.perform(put("/v1/invoice")
                 .contentType(APPLICATION_JSON)
                 .content(invoice.toString())
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());
@@ -112,9 +112,10 @@ public class InvoiceControllerMk1Tests {
                 .accept(APPLICATION_JSON)).andExpect(status().isCreated());
 
         var patchJson = new JSONObject();
+        patchJson.put("invoiceId", invoiceId);
         patchJson.put("amount", 333.99);
         patchJson.put("version", 1);
-        this.mvc.perform(patch("/v1/invoice/" + invoiceId)
+        this.mvc.perform(patch("/v1/invoice")
                 .contentType(APPLICATION_JSON)
                 .content(patchJson.toString())
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());

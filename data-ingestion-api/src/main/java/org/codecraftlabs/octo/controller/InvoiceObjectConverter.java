@@ -42,8 +42,8 @@ class InvoiceObjectConverter {
     }
 
     @Nonnull
-    static InvoicePatchVO convert(@Nonnull InvoicePatch from, @Nonnull String invoiceId) {
-        var converted = new InvoicePatchVO(invoiceId, from.getVersion());
+    static InvoicePatchVO convert(@Nonnull InvoicePatch from) {
+        var converted = new InvoicePatchVO(from.getInvoiceId(), from.getVersion());
         converted.setAmount(from.getAmount());
         converted.setName(from.getName());
         converted.setStatus(from.getStatus());

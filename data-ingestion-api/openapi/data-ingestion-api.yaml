@@ -1,0 +1,211 @@
+swagger: "2.0"
+info:
+  title: Invoice data ingestion API
+  description: Describes the endpoints for such API
+  version: 1.0.0
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: localhost:8080
+basePath: "/v1"
+tags:
+  - name: "invoice"
+    description: "Endpoints related to invoice management"
+schemes:
+  - http
+  - https
+paths:
+  /invoice:
+    post:
+      tags:
+        - "invoice"
+      summary: "Add a new invoice into the platform"
+      description: ""
+      operationId: "addInvoice"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Invoice object that will be added into the platform"
+          required: true
+          schema:
+            $ref: "#/definitions/Invoice"
+      responses:
+        "201":
+          description: "Invoice created"
+        "400":
+          description: "An error has occurred when creating a new invoice"
+    put:
+      tags:
+        - "invoice"
+      summary: "Update an existing invoice"
+      operationId: "updateInvoice"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Invoice object that will be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Invoice"
+      responses:
+        "200":
+          description: "Invoice updated"
+        "400":
+          description: "An error has occurred when updating an invoice"
+    get:
+      tags:
+        - "invoice"
+      summary: "List all invoices"
+      operationId: "listAllInvoices"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "List all invoices"
+        "400":
+          description: "An error has occurred when listing all invoices"
+    delete:
+      tags:
+        - "invoice"
+      summary: "Deletes all invoices"
+      operationId: "deleteAllInvoices"
+      responses:
+        "200":
+          description: "Invoice deletion was successful"
+        "400":
+          description: "An error has occurred when deleting an invoice"
+    patch:
+      tags:
+        - "invoice"
+      summary: "Modifies specific details of an invoice"
+      operationId: "patchInvoiceById"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Invoice object that will be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/InvoicePatch"
+      responses:
+        "200":
+          description: "Invoice successfully deleted"
+        "400":
+          description: "An error occurred when deleting invoice"
+  /invoice/{invoiceId}:
+    get:
+      tags:
+        - "invoice"
+      summary: "Gets the detail of a specific invoice"
+      operationId: "findInvoiceById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "invoiceId"
+          in: "path"
+          description: "Invoice Id"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Invoice details successfully retrieved"
+        "400":
+          description: "An error occurred when retrieving invoice details"
+    delete:
+      tags:
+        - "invoice"
+      summary: "Deletes a specific invoice"
+      operationId: "deleteInvoiceById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "invoiceId"
+          in: "path"
+          description: "Invoice Id"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Invoice successfully deleted"
+        "400":
+          description: "An error occurred when deleting invoice"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+
+definitions:
+  Invoice:
+    type: object
+    required:
+      - "invoiceId"
+      - "name"
+      - "amount"
+      - "companyName"
+      - "billToName"
+      - "status"
+    properties:
+      invoiceId:
+        type: "string"
+        example: "invoiceid-001"
+      name:
+        type: "string"
+        example: "Invoice code 001"
+      amount:
+        type: "number"
+        format: "double"
+        example: 25.99
+      companyName:
+        type: "string"
+        example: "Company name"
+      billToName:
+        type: "string"
+        example: "John Doe"
+      status:
+        type: "string"
+        description: "Invoice status"
+        enum:
+          - "created"
+          - "received"
+  InvoicePatch:
+    type: object
+    required:
+      - "invoiceId"
+      - "name"
+      - "amount"
+      - "status"
+      - "version"
+    properties:
+      invoiceId:
+        type: "string"
+        example: "invoiceid-001"
+      name:
+        type: "string"
+        example: "Invoice code 001"
+      amount:
+        type: "number"
+        format: "double"
+        example: 25.99
+      companyName:
+        type: "string"
+        example: "Company name"
+      billToName:
+        type: "string"
+        example: "John Doe"
+      status:
+        type: "string"
+        description: "Invoice status"
+        enum:
+          - "created"
+          - "received"
