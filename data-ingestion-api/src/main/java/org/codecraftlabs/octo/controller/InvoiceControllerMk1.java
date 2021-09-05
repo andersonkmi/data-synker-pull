@@ -1,6 +1,9 @@
 package org.codecraftlabs.octo.controller;
 
-import org.codecraftlabs.octo.controller.util.InvoiceValidator;
+import org.codecraftlabs.octo.controller.util.BaseInvoiceValidator;
+import org.codecraftlabs.octo.controller.util.InvalidInvoiceStatusException;
+import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
+import org.codecraftlabs.octo.controller.util.MissingVersionException;
 import org.codecraftlabs.octo.controller.util.UpdateInvoiceValidator;
 import org.codecraftlabs.octo.service.InvoiceService;
 import org.codecraftlabs.octo.service.ServiceException;
@@ -32,13 +35,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class InvoiceControllerMk1 {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceControllerMk1.class);
 
-    private InvoiceValidator invoiceValidator;
+    private BaseInvoiceValidator baseInvoiceValidator;
     private InvoiceService invoiceService;
     private UpdateInvoiceValidator updateInvoiceValidator;
 
     @Autowired
-    public void setInvoiceValidator(InvoiceValidator invoiceValidator) {
-        this.invoiceValidator = invoiceValidator;
+    public void setBaseInvoiceValidator(BaseInvoiceValidator baseInvoiceValidator) {
+        this.baseInvoiceValidator = baseInvoiceValidator;
     }
 
     @Autowired
@@ -52,13 +55,13 @@ public class InvoiceControllerMk1 {
     }
 
     @PostMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> insert(@RequestBody Invoice invoice) {
+    public ResponseEntity<InvoiceResponse> insert(@RequestBody InvoiceRequest invoice) {
         try {
             // Validations
-            invoiceValidator.validate(invoice);
+            baseInvoiceValidator.validate(invoice);
 
             // Conversion
-            var invoiceVO = convertForInvoice(invoice, true);
+            var invoiceVO = convertForInvoice(invoice);
 
             // Inserts invoice into the data repository
             invoiceService.insert(invoiceVO);
@@ -68,7 +71,7 @@ public class InvoiceControllerMk1 {
             response.setInvoiceId(invoice.getInvoiceId());
             response.setMessage("Invoice created");
             return ResponseEntity.status(CREATED).body(response);
-        } catch (MissingInvoiceIdException exception) {
+        } catch (MissingInvoiceIdException | InvalidInvoiceStatusException | MissingVersionException exception) {
             logger.error("Invoice does not have id.", exception);
             var response = new InvoiceResponse();
             response.setMessage("Missing invoice id.");
@@ -77,11 +80,6 @@ public class InvoiceControllerMk1 {
             logger.error("Failed to insert invoice", exception);
             var response = new InvoiceResponse();
             response.setInvoiceId(invoice.getInvoiceId());
-            response.setMessage(exception.getMessage());
-            return ResponseEntity.status(BAD_REQUEST).body(response);
-        } catch (InvalidInvoiceStatusException exception) {
-            logger.error("Invoice has an invalid status.", exception);
-            var response = new InvoiceResponse();
             response.setMessage(exception.getMessage());
             return ResponseEntity.status(BAD_REQUEST).body(response);
         }
@@ -114,10 +112,10 @@ public class InvoiceControllerMk1 {
     }
 
     @PutMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> update(@RequestBody Invoice invoice) {
+    public ResponseEntity<InvoiceResponse> update(@RequestBody InvoiceUpdateRequest invoice) {
         try {
             updateInvoiceValidator.validate(invoice);
-            var converted = convertForInvoice(invoice, false);
+            var converted = convertForInvoice(invoice);
             invoiceService.update(converted);
 
             var response = new InvoiceResponse();
@@ -128,6 +126,11 @@ public class InvoiceControllerMk1 {
             logger.error("Invoice does not have id.", exception);
             var response = new InvoiceResponse();
             response.setMessage("Missing invoice id.");
+            return ResponseEntity.status(BAD_REQUEST).body(response);
+        } catch (MissingVersionException exception) {
+            logger.error("Invoice does not have version.", exception);
+            var response = new InvoiceResponse();
+            response.setMessage("Missing invoice version.");
             return ResponseEntity.status(BAD_REQUEST).body(response);
         } catch (InvalidInvoiceStatusException exception) {
             logger.error("Invoice has an invalid status.", exception);

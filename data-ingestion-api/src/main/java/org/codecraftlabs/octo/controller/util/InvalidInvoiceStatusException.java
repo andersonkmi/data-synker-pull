@@ -1,4 +1,4 @@
-package org.codecraftlabs.octo.controller;
+package org.codecraftlabs.octo.controller.util;
 
 public class InvalidInvoiceStatusException extends Exception {
     public InvalidInvoiceStatusException(String message) {
