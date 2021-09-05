@@ -7,6 +7,7 @@ import org.codecraftlabs.octo.controller.util.MissingVersionException;
 import org.codecraftlabs.octo.controller.util.UpdateInvoiceValidator;
 import org.codecraftlabs.octo.service.InvoiceService;
 import org.codecraftlabs.octo.service.ServiceException;
+import org.codecraftlabs.octo.service.SortingOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 import static org.codecraftlabs.octo.controller.InvoiceObjectConverter.convert;
 import static org.codecraftlabs.octo.controller.InvoiceObjectConverter.convertForInvoice;
+import static org.codecraftlabs.octo.service.SortingField.ID;
+import static org.codecraftlabs.octo.service.SortingField.findByCode;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -105,6 +109,20 @@ public class InvoiceControllerMk1 {
         if (results.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
+
+        var converted = results.stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
+        var response = new ListResponse<>(converted);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ListResponse<Set<Invoice>>> listInvoices(@RequestParam(value = "field") String sortingField,
+                                                                   @RequestParam(value = "order") String sortingOrder,
+                                                                   @RequestParam(value = "pageSize") int pageSize,
+                                                                   @RequestParam(value = "page") int page) {
+        var sortingFieldItem = findByCode(sortingField).isPresent() ? findByCode(sortingField).get() : ID;
+        var sortingOrderItem = SortingOrder.valueOf(sortingOrder);
+        var results = invoiceService.listInvoices(sortingFieldItem, sortingOrderItem, pageSize, page);
 
         var converted = results.stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
         var response = new ListResponse<>(converted);

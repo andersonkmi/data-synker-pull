@@ -71,6 +71,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
     }
 
     @Override
+    @Transactional(rollbackFor = RepositoryException.class)
     public Optional<Set<Invoice>> listAll() {
         var statement = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice order by invoiceid";
         var result = jdbcTemplate.query(statement, new InvoicePostgresRowMapper());
@@ -135,6 +136,18 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to update invoice", exception);
         }
+    }
+
+    @Override
+    public Optional<Set<Invoice>> listInvoices(String sortingField, String sortingOrder, int pageSize, int page) {
+        String buffer = "select id, invoiceid, invoicename, companyname, billtoname, amount, status, creationdate, lastmodificationdate, version from invoice " +
+                "order by " + sortingField + " " + sortingOrder + " offset " + page + " limit " + pageSize;
+
+        var result = jdbcTemplate.query(buffer, new InvoicePostgresRowMapper());
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new HashSet<>(result));
     }
 
     private Object[] buildArgsList(@Nonnull InvoicePatch invoicePatch) {

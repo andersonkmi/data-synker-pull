@@ -18,4 +18,6 @@ public interface InvoiceRepository {
     void delete() throws RepositoryException;
 
     void update(@Nonnull InvoicePatch invoicePatch) throws RepositoryException;
+
+    Optional<Set<Invoice>> listInvoices(String sortingField, String sortingOrder, int pageSize, int page) throws RepositoryException;
 }
