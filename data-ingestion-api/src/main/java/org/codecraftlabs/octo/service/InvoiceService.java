@@ -103,4 +103,12 @@ public class InvoiceService {
             throw new ServiceException(exception.getMessage(), exception);
         }
     }
+
+    public Set<InvoiceVO> listInvoices(@Nonnull SortingField sortingField, @Nonnull SortingOrder sortingOrder, int pageSize, int page) {
+        var results = invoiceRepositoryPostgres.listInvoices(sortingField.getCode(), sortingOrder.name(), pageSize, page);
+        if (results.isEmpty()) {
+            return Collections.emptySet();
+        }
+        return results.get().stream().map(InvoiceObjectConverter::convert).collect(Collectors.toSet());
+    }
 }
