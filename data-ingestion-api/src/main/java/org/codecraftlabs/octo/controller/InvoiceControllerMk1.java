@@ -115,7 +115,7 @@ public class InvoiceControllerMk1 {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/list")
     public ResponseEntity<ListResponse<Set<Invoice>>> listInvoices(@RequestParam(value = "field") String sortingField,
                                                                    @RequestParam(value = "order") String sortingOrder,
                                                                    @RequestParam(value = "pageSize") int pageSize,
