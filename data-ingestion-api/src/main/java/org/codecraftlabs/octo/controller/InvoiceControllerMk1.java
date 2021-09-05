@@ -1,6 +1,6 @@
 package org.codecraftlabs.octo.controller;
 
-import org.codecraftlabs.octo.controller.util.BaseInvoiceValidator;
+import org.codecraftlabs.octo.controller.util.CreateInvoiceValidator;
 import org.codecraftlabs.octo.controller.util.InvalidInvoiceStatusException;
 import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
 import org.codecraftlabs.octo.controller.util.MissingVersionException;
@@ -35,13 +35,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class InvoiceControllerMk1 {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceControllerMk1.class);
 
-    private BaseInvoiceValidator baseInvoiceValidator;
+    private CreateInvoiceValidator createInvoiceValidator;
     private InvoiceService invoiceService;
     private UpdateInvoiceValidator updateInvoiceValidator;
 
     @Autowired
-    public void setBaseInvoiceValidator(BaseInvoiceValidator baseInvoiceValidator) {
-        this.baseInvoiceValidator = baseInvoiceValidator;
+    public void setCreateInvoiceValidator(CreateInvoiceValidator createInvoiceValidator) {
+        this.createInvoiceValidator = createInvoiceValidator;
     }
 
     @Autowired
@@ -55,10 +55,10 @@ public class InvoiceControllerMk1 {
     }
 
     @PostMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> insert(@RequestBody InvoiceRequest invoice) {
+    public ResponseEntity<InvoiceResponse> insert(@RequestBody InvoiceCreateRequest invoice) {
         try {
             // Validations
-            baseInvoiceValidator.validate(invoice);
+            createInvoiceValidator.validate(invoice);
 
             // Conversion
             var invoiceVO = convertForInvoice(invoice);
@@ -174,7 +174,7 @@ public class InvoiceControllerMk1 {
     }
 
     @PatchMapping("/invoice")
-    public ResponseEntity<InvoiceResponse> update(@RequestBody InvoicePatch invoicePatch) {
+    public ResponseEntity<InvoiceResponse> update(@RequestBody InvoicePatchRequest invoicePatch) {
         var invoicePatchRequest = convert(invoicePatch);
         try {
             invoiceService.update(invoicePatchRequest);

@@ -1,19 +1,10 @@
 package org.codecraftlabs.octo.controller;
 
-public class InvoicePatch {
-    private String invoiceId;
+public class InvoicePatchRequest extends InvoiceBaseRequest {
     private String name;
     private double amount;
     private String status;
     private long version;
-
-    public void setInvoiceId(String invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
-    public String getInvoiceId() {
-        return invoiceId;
-    }
 
     public void setVersion(long version) {
         this.version = version;

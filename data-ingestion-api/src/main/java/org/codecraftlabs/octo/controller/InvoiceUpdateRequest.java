@@ -1,6 +1,6 @@
 package org.codecraftlabs.octo.controller;
 
-public class InvoiceUpdateRequest extends InvoiceRequest {
+public final class InvoiceUpdateRequest extends InvoiceCreateRequest {
     private long version;
     private String status;
 
