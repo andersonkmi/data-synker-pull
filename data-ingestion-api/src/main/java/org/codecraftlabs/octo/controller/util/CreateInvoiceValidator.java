@@ -1,13 +1,13 @@
 package org.codecraftlabs.octo.controller.util;
 
-import org.codecraftlabs.octo.controller.InvoiceRequest;
+import org.codecraftlabs.octo.controller.InvoiceBaseRequest;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.CheckForNull;
 
 @Component
-public class BaseInvoiceValidator {
-    public void validate(@CheckForNull InvoiceRequest invoice) throws MissingInvoiceIdException, InvalidInvoiceStatusException, MissingVersionException {
+public class CreateInvoiceValidator implements InvoiceValidator {
+    public void validate(@CheckForNull InvoiceBaseRequest invoice) throws MissingInvoiceIdException, InvalidInvoiceStatusException, MissingVersionException {
         if (invoice == null) {
             throw new MissingInvoiceIdException("Invoice request is null");
         }

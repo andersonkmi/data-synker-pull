@@ -10,7 +10,7 @@ import static org.codecraftlabs.octo.core.InvoiceStatus.CREATED;
 class InvoiceObjectConverter {
     private static final int INITIAL_VERSION = 1;
     @Nonnull
-    static InvoiceVO convertForInvoice(@Nonnull InvoiceRequest request) {
+    static InvoiceVO convertForInvoice(@Nonnull InvoiceCreateRequest request) {
         var converted = new InvoiceVO(request.getInvoiceId());
         converted.setAmount(request.getAmount());
         converted.setBillToName(request.getBillToName());
@@ -49,7 +49,7 @@ class InvoiceObjectConverter {
     }
 
     @Nonnull
-    static InvoicePatchVO convert(@Nonnull InvoicePatch from) {
+    static InvoicePatchVO convert(@Nonnull InvoicePatchRequest from) {
         var converted = new InvoicePatchVO(from.getInvoiceId(), from.getVersion());
         converted.setAmount(from.getAmount());
         converted.setName(from.getName());

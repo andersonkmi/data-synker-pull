@@ -1,13 +1,13 @@
 package org.codecraftlabs.octo.controller.util;
 
-import org.codecraftlabs.octo.controller.InvoiceRequest;
+import org.codecraftlabs.octo.controller.InvoiceBaseRequest;
 import org.codecraftlabs.octo.controller.InvoiceUpdateRequest;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class UpdateInvoiceValidator extends BaseInvoiceValidator {
+public class UpdateInvoiceValidator extends CreateInvoiceValidator implements InvoiceValidator {
     @Override
-    public void validate(InvoiceRequest invoice) throws MissingInvoiceIdException, MissingVersionException, InvalidInvoiceStatusException {
+    public void validate(InvoiceBaseRequest invoice) throws MissingInvoiceIdException, MissingVersionException, InvalidInvoiceStatusException {
         super.validate(invoice);
 
         var converted = (InvoiceUpdateRequest) invoice;
