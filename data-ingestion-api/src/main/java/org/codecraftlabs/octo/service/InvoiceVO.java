@@ -1,5 +1,7 @@
 package org.codecraftlabs.octo.service;
 
+import com.google.gson.Gson;
+
 import java.util.Date;
 
 public class InvoiceVO {
@@ -83,5 +85,10 @@ public class InvoiceVO {
 
     public long getVersion() {
         return version;
+    }
+
+    public String toJson() {
+        var gson = new Gson();
+        return gson.toJson(this);
     }
 }

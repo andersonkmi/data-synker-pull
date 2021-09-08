@@ -1,5 +1,6 @@
 package org.codecraftlabs.octo.service;
 
+import org.codecraftlabs.octo.aws.AwsS3Service;
 import org.codecraftlabs.octo.repository.RepositoryException;
 import org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres;
 import org.slf4j.Logger;
@@ -21,15 +22,23 @@ public class InvoiceService {
 
     private InvoiceRepositoryPostgres invoiceRepositoryPostgres;
 
+    private AwsS3Service awsS3Service;
+
     @Autowired
     public void setInvoiceRepositoryPostgres(InvoiceRepositoryPostgres invoiceRepositoryPostgres) {
         this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
+    }
+
+    @Autowired
+    public void setAwsS3Service(AwsS3Service awsS3Service) {
+        this.awsS3Service = awsS3Service;
     }
 
     public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
         var converted = convert(invoiceVO, false);
         try {
             invoiceRepositoryPostgres.insert(converted);
+            awsS3Service.saveRequest(invoiceVO.toJson());
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when inserting a new invoice record: '%s'", invoiceVO.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
