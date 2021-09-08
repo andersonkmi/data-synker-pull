@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
+import static org.codecraftlabs.octo.service.RequestType.CREATE;
 
 @Service
 public class InvoiceService {
@@ -38,7 +39,8 @@ public class InvoiceService {
         var converted = convert(invoiceVO, false);
         try {
             invoiceRepositoryPostgres.insert(converted);
-            awsS3Service.saveRequest(invoiceVO.toJson());
+            var request = new RequestData<>( invoiceVO, CREATE);
+            awsS3Service.saveRequest(request.toJson());
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when inserting a new invoice record: '%s'", invoiceVO.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
