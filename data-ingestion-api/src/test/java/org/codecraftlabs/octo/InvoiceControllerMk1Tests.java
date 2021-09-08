@@ -122,7 +122,7 @@ public class InvoiceControllerMk1Tests {
     }
 
     @Test
-    @Order(99)
+    @Order(999)
     public void deleteAllInvoices() throws Exception {
         this.mvc.perform(delete("/v1/invoice")
                 .contentType(APPLICATION_JSON)
