@@ -28,7 +28,7 @@ public final class S3Service {
         var key = request.key().orElseThrow(() -> new InvalidPutRequestException("Missing key"));
         var contents = request.contents().orElseThrow(() -> new InvalidPutRequestException("Missing contents"));
         try {
-            s3Client.putObject(PutObjectRequest.builder().bucket(bucket).key(key).build(), fromString(contents));
+            s3Client.putObject(PutObjectRequest.builder().bucket(bucket).key(key).contentType(request.contentType().code()).build(), fromString(contents));
         } catch (S3Exception exception) {
             throw new AWSException("Error when calling S3 service", exception);
         }

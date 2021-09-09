@@ -4,9 +4,14 @@ plugins {
 	id 'java'
 }
 
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
+}
+
 group = 'org.codecraftlabs.dia'
 version = '1.5.1'
-sourceCompatibility = '11'
 
 repositories {
 	mavenLocal()

@@ -1,11 +1,13 @@
 package org.codecraftlabs.octo.service;
 
 import org.codecraftlabs.octo.aws.AwsS3Service;
+import org.codecraftlabs.octo.aws.S3Status;
 import org.codecraftlabs.octo.repository.RepositoryException;
 import org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
@@ -25,6 +27,13 @@ public class InvoiceService {
 
     private AwsS3Service awsS3Service;
 
+    private Environment environment;
+
+    @Autowired
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
     @Autowired
     public void setInvoiceRepositoryPostgres(InvoiceRepositoryPostgres invoiceRepositoryPostgres) {
         this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
@@ -36,11 +45,15 @@ public class InvoiceService {
     }
 
     public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
+        var s3UploadActive = Optional.ofNullable(environment.getProperty("octo.aws.s3.status")).orElse("").equalsIgnoreCase(S3Status.ENABLED.name());
+
         var converted = convert(invoiceVO, false);
         try {
             invoiceRepositoryPostgres.insert(converted);
-            var request = new RequestData<>( invoiceVO, CREATE);
-            awsS3Service.saveRequest(request.toJson());
+            if (s3UploadActive) {
+                var request = new RequestData<>( invoiceVO, CREATE);
+                awsS3Service.saveRequest(request.toJson());
+            }
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when inserting a new invoice record: '%s'", invoiceVO.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);

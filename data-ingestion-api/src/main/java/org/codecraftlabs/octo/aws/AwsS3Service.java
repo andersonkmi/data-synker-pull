@@ -16,6 +16,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.codecraftlabs.cloud.data.ContentType.APPLICATION_JSON;
+
 @Component
 public class AwsS3Service {
     private static final Logger logger = LoggerFactory.getLogger(AwsS3Service.class);
@@ -51,7 +53,7 @@ public class AwsS3Service {
         var awsRegion = AWSRegion.findByCode(region);
         if (awsRegion.isPresent()) {
             var s3Service = new S3Service(awsRegion.get());
-            var putRequest = new S3PutRequest(bucket, getFullKeyName(prefix, keySalt), json);
+            var putRequest = new S3PutRequest(bucket, getFullKeyName(prefix, keySalt), json, APPLICATION_JSON);
             try {
                 s3Service.putObject(putRequest);
             } catch (AWSException | InvalidPutRequestException exception) {
@@ -61,7 +63,7 @@ public class AwsS3Service {
     }
 
     private String getFormattedDate() {
-        var formatPattern = "yyyy-MM-dd-MM";
+        var formatPattern = "yyyy-MM-dd";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(formatPattern);
         return dateFormatter.format(LocalDate.now());
     }
