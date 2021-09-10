@@ -12,6 +12,8 @@ b) Data stage system
 
 c) Data updates API
 
+d) [AWS utils](ds-aws-util/)
+
 The first module as the name suggests is used to receive data updates (creation and updates) and for the sake of the exercise it simulates an really, really simple invoice management system.
 
 The second module has the responsability to receive and stage the modifications so they can be retrieved by an external entity through the updates API.
@@ -29,7 +31,7 @@ Below you can see a diagram of the original design for this sandbox project:
 
 Here are the technologies used (so far):
 
-- AWS EC2, RDS (PostgreSQL), SQS
+- AWS EC2, RDS (PostgreSQL), SQS, S3
 - Gradle, Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
 - Docker
 - Gitflow
