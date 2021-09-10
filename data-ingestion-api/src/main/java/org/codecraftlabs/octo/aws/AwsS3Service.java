@@ -52,7 +52,7 @@ public class AwsS3Service {
 
         var awsRegion = AWSRegion.findByCode(region);
         if (awsRegion.isPresent()) {
-            var s3Service = new S3Service(awsRegion.get());
+            var s3Service = S3Service.builder().region(awsRegion.get()).build();
             var putRequest = new S3PutRequest(bucket, getFullKeyName(prefix, keySalt), json, APPLICATION_JSON);
             try {
                 s3Service.putObject(putRequest);
