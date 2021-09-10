@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 
 import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 import static org.codecraftlabs.octo.service.RequestType.CREATE;
+import static org.codecraftlabs.octo.service.RequestType.DELETE;
+import static org.codecraftlabs.octo.service.RequestType.PATCH;
+import static org.codecraftlabs.octo.service.RequestType.UPDATE;
 
 @Service
 public class InvoiceService {
@@ -44,14 +47,16 @@ public class InvoiceService {
         this.awsS3Service = awsS3Service;
     }
 
-    public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
-        var s3UploadActive = Optional.ofNullable(environment.getProperty("octo.aws.s3.status")).orElse("").equalsIgnoreCase(S3Status.ENABLED.name());
+    private boolean isS3UploadActive() {
+        return Optional.ofNullable(environment.getProperty("octo.aws.s3.status")).orElse("").equalsIgnoreCase(S3Status.ENABLED.name());
+    }
 
+    public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {
         var converted = convert(invoiceVO, false);
         try {
             invoiceRepositoryPostgres.insert(converted);
-            if (s3UploadActive) {
-                var request = new RequestData<>( invoiceVO, CREATE);
+            if (isS3UploadActive()) {
+                var request = new RequestData<>(invoiceVO, CREATE);
                 awsS3Service.saveRequest(request.toJson());
             }
         } catch (RepositoryException exception) {
@@ -65,6 +70,10 @@ public class InvoiceService {
 
         try {
             invoiceRepositoryPostgres.update(converted);
+            if (isS3UploadActive()) {
+                var request = new RequestData<>(invoice, UPDATE);
+                awsS3Service.saveRequest(request.toJson());
+            }
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when updating invoice: '%s'", invoice.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
@@ -75,19 +84,27 @@ public class InvoiceService {
         var converted = convert(invoice);
         try {
             invoiceRepositoryPostgres.update(converted);
+            if (isS3UploadActive()) {
+                var request = new RequestData<>(invoice, PATCH);
+                awsS3Service.saveRequest(request.toJson());
+            }
         } catch (RepositoryException exception) {
             logger.error(String.format("Error when updating invoice: '%s'", invoice.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
         }
     }
 
-    public void delete(@Nonnull String invoiceId) throws ServiceException {
-        logger.info(String.format("Deleting invoice: '%s'", invoiceId));
+    public void delete(@Nonnull InvoiceVO invoice) throws ServiceException {
+        logger.info(String.format("Deleting invoice: '%s'", invoice.getInvoiceId()));
 
         try {
-            invoiceRepositoryPostgres.delete(invoiceId);
+            invoiceRepositoryPostgres.delete(invoice.getInvoiceId());
+            if (isS3UploadActive()) {
+                var request = new RequestData<>(invoice, DELETE);
+                awsS3Service.saveRequest(request.toJson());
+            }
         } catch (RepositoryException exception) {
-            logger.error(String.format("Error when deleting invoice: '%s'", invoiceId), exception);
+            logger.error(String.format("Error when deleting invoice: '%s'", invoice.getInvoiceId()), exception);
             throw new ServiceException(exception.getMessage(), exception);
         }
     }
