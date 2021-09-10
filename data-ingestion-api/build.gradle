@@ -11,7 +11,7 @@ java {
 }
 
 group = 'org.codecraftlabs.dia'
-version = '1.6.0'
+version = '1.6.1'
 
 repositories {
 	mavenLocal()
@@ -34,7 +34,7 @@ dependencies {
 
 
 	// My own dependencies
-	implementation 'org.codecraftlabs.cloud:ds-aws-util:1.0.0'
+	implementation 'org.codecraftlabs.cloud:ds-aws-util:1.1.0'
 }
 
 test {
