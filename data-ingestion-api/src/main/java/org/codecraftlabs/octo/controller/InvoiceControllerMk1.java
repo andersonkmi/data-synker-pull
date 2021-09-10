@@ -6,6 +6,7 @@ import org.codecraftlabs.octo.controller.util.MissingInvoiceIdException;
 import org.codecraftlabs.octo.controller.util.MissingVersionException;
 import org.codecraftlabs.octo.controller.util.UpdateInvoiceValidator;
 import org.codecraftlabs.octo.service.InvoiceService;
+import org.codecraftlabs.octo.service.InvoiceVO;
 import org.codecraftlabs.octo.service.ServiceException;
 import org.codecraftlabs.octo.service.SortingOrder;
 import org.slf4j.Logger;
@@ -167,7 +168,7 @@ public class InvoiceControllerMk1 {
     @DeleteMapping("/invoice/{invoiceId}")
     public ResponseEntity<InvoiceResponse> delete(@PathVariable String invoiceId) {
         try {
-            invoiceService.delete(invoiceId);
+            invoiceService.delete(new InvoiceVO(invoiceId));
             var response = new InvoiceResponse();
             response.setInvoiceId(invoiceId);
             response.setMessage("Invoice deleted");
