@@ -2,8 +2,10 @@ package org.codecraftlabs.octo.service;
 
 import org.codecraftlabs.octo.aws.AwsS3Service;
 import org.codecraftlabs.octo.aws.S3Status;
+import org.codecraftlabs.octo.repository.InvoiceTracking;
 import org.codecraftlabs.octo.repository.RepositoryException;
 import org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres;
+import org.codecraftlabs.octo.repository.postgres.InvoiceTrackingRepositoryPostgres;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,12 +33,14 @@ public class InvoiceService {
     private final InvoiceRepositoryPostgres invoiceRepositoryPostgres;
     private final AwsS3Service awsS3Service;
     private final Environment environment;
+    private final InvoiceTrackingRepositoryPostgres invoiceTrackingRepositoryPostgres;
 
     @Autowired
-    public InvoiceService(InvoiceRepositoryPostgres invoiceRepositoryPostgres, AwsS3Service awsS3Service, Environment environment) {
+    public InvoiceService(InvoiceRepositoryPostgres invoiceRepositoryPostgres, AwsS3Service awsS3Service, Environment environment, InvoiceTrackingRepositoryPostgres invoiceTrackingRepositoryPostgres) {
         this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
         this.awsS3Service = awsS3Service;
         this.environment = environment;
+        this.invoiceTrackingRepositoryPostgres = invoiceTrackingRepositoryPostgres;
     }
 
     private boolean isS3UploadActive() {
@@ -46,8 +51,11 @@ public class InvoiceService {
         var converted = convert(invoiceVO, false);
         try {
             invoiceRepositoryPostgres.insert(converted);
+            var invoiceTracking = new InvoiceTracking(invoiceVO.getInvoiceId(), "created", new Date(), new Date());
+            long invoiceTrackingId = invoiceTrackingRepositoryPostgres.insert(invoiceTracking);
+
             if (isS3UploadActive()) {
-                var request = new RequestData<>(invoiceVO, CREATE);
+                var request = new RequestData<>(invoiceVO, CREATE, invoiceTrackingId);
                 awsS3Service.saveRequest(request.toJson());
             }
         } catch (RepositoryException exception) {
@@ -61,8 +69,11 @@ public class InvoiceService {
 
         try {
             invoiceRepositoryPostgres.update(converted);
+            var invoiceTracking = new InvoiceTracking(invoice.getInvoiceId(), "created", new Date(), new Date());
+            long invoiceTrackingId = invoiceTrackingRepositoryPostgres.insert(invoiceTracking);
+
             if (isS3UploadActive()) {
-                var request = new RequestData<>(invoice, UPDATE);
+                var request = new RequestData<>(invoice, UPDATE, invoiceTrackingId);
                 awsS3Service.saveRequest(request.toJson());
             }
         } catch (RepositoryException exception) {
@@ -75,8 +86,11 @@ public class InvoiceService {
         var converted = convert(invoice);
         try {
             invoiceRepositoryPostgres.update(converted);
+            var invoiceTracking = new InvoiceTracking(invoice.getInvoiceId(), "created", new Date(), new Date());
+            long invoiceTrackingId = invoiceTrackingRepositoryPostgres.insert(invoiceTracking);
+
             if (isS3UploadActive()) {
-                var request = new RequestData<>(invoice, PATCH);
+                var request = new RequestData<>(invoice, PATCH, invoiceTrackingId);
                 awsS3Service.saveRequest(request.toJson());
             }
         } catch (RepositoryException exception) {
@@ -90,8 +104,11 @@ public class InvoiceService {
 
         try {
             invoiceRepositoryPostgres.delete(invoice.getInvoiceId());
+            var invoiceTracking = new InvoiceTracking(invoice.getInvoiceId(), "created", new Date(), new Date());
+            long invoiceTrackingId = invoiceTrackingRepositoryPostgres.insert(invoiceTracking);
+
             if (isS3UploadActive()) {
-                var request = new RequestData<>(invoice, DELETE);
+                var request = new RequestData<>(invoice, DELETE, invoiceTrackingId);
                 awsS3Service.saveRequest(request.toJson());
             }
         } catch (RepositoryException exception) {

@@ -15,12 +15,17 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static org.codecraftlabs.octo.service.RequestType.DELETE;
+import static org.codecraftlabs.octo.service.RequestType.PATCH;
+import static org.codecraftlabs.octo.service.RequestType.UPDATE;
 
 @Repository("org.codecraftlabs.octo.repository.postgres.InvoiceRepositoryPostgres")
 public class InvoiceRepositoryPostgres implements InvoiceRepository {
@@ -47,7 +52,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
                     invoice.getStatus(),
                     invoice.getCreationDate(),
                     invoice.getLastModificationDate());
-            logger.info(String.format("Invoice inserted successfully: '%s'", invoice.getInvoiceId()));
+            logger.info(format("Invoice inserted successfully: '%s'", invoice.getInvoiceId()));
         } catch (DuplicateKeyException exception) {
             throw new RepositoryException("Attempt to insert an invoice with the same invoice id", exception);
         } catch (DataAccessException exception) {
@@ -63,7 +68,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
             var result = jdbcTemplate.queryForObject(statement, new InvoicePostgresRowMapper(), invoiceId);
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException exception) {
-            logger.info(String.format("No invoice found with provided id: '%s'", invoiceId));
+            logger.info(format("No invoice found with provided id: '%s'", invoiceId));
             return Optional.empty();
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to find an invoice by id", exception);
@@ -117,7 +122,7 @@ public class InvoiceRepositoryPostgres implements InvoiceRepository {
         var statement = "delete from invoice";
         try {
             int total = jdbcTemplate.update(statement);
-            logger.info(String.format("Total invoices deleted: %d", total));
+            logger.info(format("Total invoices deleted: %d", total));
         } catch (DataAccessException exception) {
             throw new RepositoryException("Failed to delete all invoices", exception);
         }
