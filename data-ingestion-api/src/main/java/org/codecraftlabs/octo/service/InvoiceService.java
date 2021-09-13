@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.codecraftlabs.octo.core.PropertyKey.AWS_S3_STATUS;
 import static org.codecraftlabs.octo.service.InvoiceObjectConverter.convert;
 import static org.codecraftlabs.octo.service.RequestType.CREATE;
 import static org.codecraftlabs.octo.service.RequestType.DELETE;
@@ -26,29 +27,19 @@ import static org.codecraftlabs.octo.service.RequestType.UPDATE;
 public class InvoiceService {
     private static final Logger logger = LoggerFactory.getLogger(InvoiceService.class);
 
-    private InvoiceRepositoryPostgres invoiceRepositoryPostgres;
-
-    private AwsS3Service awsS3Service;
-
-    private Environment environment;
+    private final InvoiceRepositoryPostgres invoiceRepositoryPostgres;
+    private final AwsS3Service awsS3Service;
+    private final Environment environment;
 
     @Autowired
-    public void setEnvironment(Environment environment) {
+    public InvoiceService(InvoiceRepositoryPostgres invoiceRepositoryPostgres, AwsS3Service awsS3Service, Environment environment) {
+        this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
+        this.awsS3Service = awsS3Service;
         this.environment = environment;
     }
 
-    @Autowired
-    public void setInvoiceRepositoryPostgres(InvoiceRepositoryPostgres invoiceRepositoryPostgres) {
-        this.invoiceRepositoryPostgres = invoiceRepositoryPostgres;
-    }
-
-    @Autowired
-    public void setAwsS3Service(AwsS3Service awsS3Service) {
-        this.awsS3Service = awsS3Service;
-    }
-
     private boolean isS3UploadActive() {
-        return Optional.ofNullable(environment.getProperty("octo.aws.s3.status")).orElse("").equalsIgnoreCase(S3Status.ENABLED.name());
+        return Optional.ofNullable(environment.getProperty(AWS_S3_STATUS.key())).orElse("").equalsIgnoreCase(S3Status.ENABLED.name());
     }
 
     public void insert(@Nonnull InvoiceVO invoiceVO) throws ServiceException {

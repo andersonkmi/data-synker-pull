@@ -17,6 +17,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.codecraftlabs.cloud.data.ContentType.APPLICATION_JSON;
+import static org.codecraftlabs.octo.core.PropertyKey.AWS_S3_BUCKET;
+import static org.codecraftlabs.octo.core.PropertyKey.AWS_S3_KEY_SALT;
+import static org.codecraftlabs.octo.core.PropertyKey.AWS_S3_PREFIX;
+import static org.codecraftlabs.octo.core.PropertyKey.AWS_S3_REGION;
 
 @Component
 public class AwsS3Service {
@@ -30,10 +34,10 @@ public class AwsS3Service {
     }
 
     public void saveRequest(@Nonnull String json) {
-        var region = environment.getProperty("aws.s3.region");
-        var bucket = environment.getProperty("aws.s3.bucket");
-        var prefix = environment.getProperty("aws.s3.prefix");
-        var keySalt = environment.getProperty("aws.s3.key.salt");
+        var region = environment.getProperty(AWS_S3_REGION.key());
+        var bucket = environment.getProperty(AWS_S3_BUCKET.key());
+        var prefix = environment.getProperty(AWS_S3_PREFIX.key());
+        var keySalt = environment.getProperty(AWS_S3_KEY_SALT.key());
 
         if (bucket == null || bucket.isBlank()) {
             logger.error("Bucket is not configured");
