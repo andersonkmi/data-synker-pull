@@ -12,8 +12,6 @@ b) Data stage system
 
 c) Data updates API
 
-d) [AWS utils](ds-aws-util/)
-
 The first module as the name suggests is used to receive data updates (creation and updates) and for the sake of the exercise it simulates an really, really simple invoice management system.
 
 The second module has the responsability to receive and stage the modifications so they can be retrieved by an external entity through the updates API.

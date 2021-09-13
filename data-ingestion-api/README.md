@@ -8,7 +8,10 @@ To run and test locally the project requires a Postgresql docker container and i
 	$ docker container run --detach --name octodb --publish 5432:5432 -v postgres-volume:/var/lib/postgresql/data octo/octodb:latest
 
 ## 2. Build
-In order to build this project run the following command:
+
+First yoo need to build and publish the project [Cloud lift](https://github.com/andersonkmi/cloud-lift).
+
+Build this project by running the following command:
     
     $ gradle clean build
 
