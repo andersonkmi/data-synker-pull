@@ -21,5 +21,5 @@ create table invoicetracking (
     invoiceid varchar(50) not null,
     creationdate  timestamp with time zone not null,
     lastmodificationdate timestamp with time zone not null,
-    status varchar(10) not null check ((status = ANY ('{created, submitted, confirmed}'::text[])))
+    status varchar(10) not null check ((status = ANY ('{CREATED, SUBMITTED, CONFIRMED}'::text[])))
 );
