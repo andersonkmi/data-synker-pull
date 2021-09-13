@@ -34,7 +34,7 @@ dependencies {
 
 
 	// My own dependencies
-	implementation 'org.codecraftlabs.cloud:ds-aws-util:1.1.0'
+	implementation 'org.codecraftlabs.cloud:cloud-lift:1.0.0'
 }
 
 test {

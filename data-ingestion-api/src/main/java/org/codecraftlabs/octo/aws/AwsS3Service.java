@@ -1,10 +1,10 @@
 package org.codecraftlabs.octo.aws;
 
 import org.codecraftlabs.cloud.AWSException;
-import org.codecraftlabs.cloud.InvalidPutRequestException;
-import org.codecraftlabs.cloud.S3Service;
 import org.codecraftlabs.cloud.data.AWSRegion;
-import org.codecraftlabs.cloud.data.S3PutRequest;
+import org.codecraftlabs.cloud.s3.InvalidPutRequestException;
+import org.codecraftlabs.cloud.s3.S3PutRequest;
+import org.codecraftlabs.cloud.s3.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +30,10 @@ public class AwsS3Service {
     }
 
     public void saveRequest(@Nonnull String json) {
-        var region = environment.getProperty("octo.aws.s3.region");
-        var bucket = environment.getProperty("octo.aws.s3.bucket");
-        var prefix = environment.getProperty("octo.aws.s3.prefix");
-        var keySalt = environment.getProperty("octo.aws.s3.key.salt");
+        var region = environment.getProperty("aws.s3.region");
+        var bucket = environment.getProperty("aws.s3.bucket");
+        var prefix = environment.getProperty("aws.s3.prefix");
+        var keySalt = environment.getProperty("aws.s3.key.salt");
 
         if (bucket == null || bucket.isBlank()) {
             logger.error("Bucket is not configured");
