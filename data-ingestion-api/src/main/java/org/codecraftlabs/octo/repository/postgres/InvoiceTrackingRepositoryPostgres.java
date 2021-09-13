@@ -15,6 +15,8 @@ import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 
+import static org.codecraftlabs.octo.core.InvoiceTrackingStatus.CREATED;
+
 @Repository("org.codecraftlabs.octo.repository.postgres.InvoiceTrackingRepositoryPostgres")
 public class InvoiceTrackingRepositoryPostgres implements InvoiceTrackingRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -34,7 +36,7 @@ public class InvoiceTrackingRepositoryPostgres implements InvoiceTrackingReposit
                     connection -> {
                         PreparedStatement ps = connection.prepareStatement(statementTracking, new String[] {"invoiceid", "status", "creationdate", "lastmodificationdate"});
                         ps.setString(1, invoiceTracking.getInvoiceId());
-                        ps.setString(2, "created");
+                        ps.setString(2, CREATED.name());
                         ps.setTimestamp(3, new Timestamp(invoiceTracking.getCreationDate().getTime()));
                         ps.setTimestamp(4, new Timestamp(invoiceTracking.getLastModificationDate().getTime()));
                         return ps;
