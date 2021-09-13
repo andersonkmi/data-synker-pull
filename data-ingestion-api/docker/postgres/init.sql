@@ -1,5 +1,6 @@
 --- Create all sequences ---
 CREATE SEQUENCE invoiceseq;
+CREATE SEQUENCE invoicetrackingseq;
 
 --- Create all tables ---
 CREATE TABLE invoice (
@@ -13,4 +14,12 @@ CREATE TABLE invoice (
     creationdate timestamp with time zone not null,
     lastmodificationdate timestamp with time zone not null,
     version bigint not null
+);
+
+create table invoicetracking (
+    id bigint not null primary key DEFAULT NEXTVAL('invoicetrackingseq'),
+    invoiceid varchar(50) not null,
+    creationdate  timestamp with time zone not null,
+    lastmodificationdate timestamp with time zone not null,
+    status varchar(10) not null check ((status = ANY ('{created, submitted, confirmed}'::text[])))
 );
