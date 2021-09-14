@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
   )
 
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
+  case PathList("META-INF", _*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
 }
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
