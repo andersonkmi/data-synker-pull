@@ -28,5 +28,6 @@ object InvoiceReader {
     // converts to the json object
     val json: JSONObject = new JSONObject(buffer.toString)
     logger.info("Request type: " + json.get("requestType"))
+    logger.info("Invoice tracking number: " + json.getLong("invoiceTracking"))
   }
 }
