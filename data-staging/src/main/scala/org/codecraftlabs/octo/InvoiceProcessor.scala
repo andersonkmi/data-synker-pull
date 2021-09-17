@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.S3Event
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
 import org.apache.log4j.{LogManager, Logger}
+import org.codecraftlabs.octo.InvoiceReader.readInvoiceTracking
 
 import scala.jdk.CollectionConverters._
 
@@ -20,5 +21,6 @@ class InvoiceProcessor extends RequestHandler [S3Event, String] {
     val bucket = event.getS3.getBucket.getName
     val key = event.getS3.getObject.getKey;
     logger.info(s"Processing object $key from bucket $bucket");
+    readInvoiceTracking(bucket, key)
   }
 }
