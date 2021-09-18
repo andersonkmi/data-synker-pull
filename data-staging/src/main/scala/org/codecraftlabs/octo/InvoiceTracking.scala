@@ -1,6 +1,6 @@
 package org.codecraftlabs.octo
 
-case class InvoiceTracking(invoiceTrackingNumber: String,
+case class InvoiceTracking(invoiceTrackingNumber: Long,
                            requestType: String,
                            timestamp: Long,
                            invoiceId: String,
@@ -8,4 +8,5 @@ case class InvoiceTracking(invoiceTrackingNumber: String,
                            amount: Option[Double],
                            companyName: Option[String],
                            billToName: Option[String],
-                           status: String)
+                           invoiceStatus: Option[String],
+                           trackingStatus: String)
