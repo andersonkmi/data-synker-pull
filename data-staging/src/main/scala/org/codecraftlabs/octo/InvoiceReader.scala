@@ -84,16 +84,16 @@ object InvoiceReader {
     var amount: Option[Double] = None
     var status: Option[String] = None
 
-    if (json.has(Name.toString)) {
-      name = Some(json.getString(Name.toString))
+    if (contents.has(Name.toString)) {
+      name = Some(contents.getString(Name.toString))
     }
 
-    if (json.has(Amount.toString)) {
-      amount = Some(json.getDouble(Amount.toString))
+    if (contents.has(Amount.toString)) {
+      amount = Some(contents.getDouble(Amount.toString))
     }
 
-    if (json.has(Status.toString)) {
-      status = Some(json.getString(Status.toString))
+    if (contents.has(Status.toString)) {
+      status = Some(contents.getString(Status.toString))
     }
 
     InvoiceTracking(invoiceTrackingNumber, PATCH.toString, timestamp, invoiceId, name, amount, None, None, status, INITIAL_INVOICE_TRACKING_STATUS)
