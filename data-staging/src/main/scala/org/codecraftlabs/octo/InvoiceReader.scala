@@ -1,17 +1,17 @@
 package org.codecraftlabs.octo
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
-import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item}
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.GetObjectRequest
 import org.apache.log4j.{LogManager, Logger}
+import org.codecraftlabs.octo.DynamoDbUtil.putItem
 import org.codecraftlabs.octo.InvoiceJsonField.{Amount, BillToName, CompanyName, Contents, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
+import org.codecraftlabs.octo.RequestTypes.{CREATE, DELETE, PATCH, UPDATE}
 import org.json.JSONObject
 
 import java.io.{BufferedReader, InputStreamReader}
-import scala.util.Properties
 
 object InvoiceReader {
+  private val INITIAL_INVOICE_TRACKING_STATUS = "PENDING_SUBMISSION"
   private val logger: Logger = LogManager.getLogger(getClass)
   private val s3Service = AmazonS3ClientBuilder.standard().build()
 
@@ -31,8 +31,6 @@ object InvoiceReader {
 
     // converts to the json object
     val json: JSONObject = new JSONObject(buffer.toString)
-    logger.info("Request type: " + json.get("requestType"))
-    logger.info("Invoice tracking number: " + json.getLong("invoiceTracking"))
     val invoiceTrackingRecord = extractJsonValues(json)
 
     // Sends the record to DynamoDB (for now)
@@ -43,18 +41,19 @@ object InvoiceReader {
   }
 
   private def extractJsonValues(json: JSONObject): Option[InvoiceTracking] = {
-    val requestType = json.getString("requestType")
+    val requestType = json.getString(RequestType.toString)
+    val request = RequestTypes.findByName(requestType)
 
-    requestType match {
-      case "CREATE" => Some(extractInvoiceCreationJsonFields(json, requestType))
-      case "UPDATE" => Some(extractInvoiceCreationJsonFields(json, requestType))
-      case "PATCH" => Some(extractInvoicePatchJsonFields(json))
-      case "DELETE" => Some(extractInvoiceDeleteJsonFields(json))
+    request match {
+      case CREATE => Some(extractInvoiceCreationJsonFields(json, CREATE))
+      case UPDATE => Some(extractInvoiceCreationJsonFields(json, UPDATE))
+      case PATCH => Some(extractInvoicePatchJsonFields(json))
+      case DELETE => Some(extractInvoiceDeleteJsonFields(json))
       case _ => None
     }
   }
 
-  private def extractInvoiceCreationJsonFields(json: JSONObject, requestType: String): InvoiceTracking = {
+  private def extractInvoiceCreationJsonFields(json: JSONObject, requestType: RequestTypes.RequestType): InvoiceTracking = {
     val timestamp: Long = json.getLong(Timestamp.toString)
     val invoiceTrackingNumber: Long = json.getLong(InvoiceTrackingNumber.toString)
     val contents: JSONObject = json.getJSONObject(Contents.toString)
@@ -65,7 +64,7 @@ object InvoiceReader {
     val billToName: String = contents.getString(BillToName.toString)
     val status: String = contents.getString(Status.toString)
     InvoiceTracking(invoiceTrackingNumber,
-                    requestType,
+                    requestType.toString,
                     timestamp,
                     invoiceId,
                     Some(name),
@@ -73,7 +72,7 @@ object InvoiceReader {
                     Some(companyName),
                     Some(billToName),
                     Some(status),
-                    "PENDING_SUBMISSION")
+                    INITIAL_INVOICE_TRACKING_STATUS)
   }
 
   private def extractInvoicePatchJsonFields(json: JSONObject): InvoiceTracking = {
@@ -97,7 +96,7 @@ object InvoiceReader {
       status = Some(json.getString(Status.toString))
     }
 
-    InvoiceTracking(invoiceTrackingNumber, "PATCH", timestamp, invoiceId, name, amount, None, None, status, "PENDING_SUBMISSION")
+    InvoiceTracking(invoiceTrackingNumber, PATCH.toString, timestamp, invoiceId, name, amount, None, None, status, INITIAL_INVOICE_TRACKING_STATUS)
   }
 
   private def extractInvoiceDeleteJsonFields(json: JSONObject): InvoiceTracking = {
@@ -105,26 +104,6 @@ object InvoiceReader {
     val invoiceTrackingNumber: Long = json.getLong(InvoiceTrackingNumber.toString)
     val contents: JSONObject = json.getJSONObject(Contents.toString)
     val invoiceId: String = contents.getString(InvoiceId.toString)
-    InvoiceTracking(invoiceTrackingNumber, "DELETE", timestamp, invoiceId, None, None, None, None, None, "PENDING_SUBMISSION")
-  }
-
-  private def putItem(invoiceTracking: InvoiceTracking): Unit = {
-    val dynamoDBTable: Option[String] = Properties.envOrNone(EnvironmentVariable.DynamoDbTable)
-    if (dynamoDBTable.isDefined) {
-      val dynamoDbClient = AmazonDynamoDBClientBuilder.standard().build()
-      val dynamoDB = new DynamoDB(dynamoDbClient)
-      val table = dynamoDB.getTable(dynamoDBTable.get)
-
-      val item = new Item()
-        .withPrimaryKey(InvoiceTrackingNumber.toString, invoiceTracking.invoiceTrackingNumber)
-        .withString(InvoiceId.toString, invoiceTracking.invoiceId)
-        .withString(RequestType.toString, invoiceTracking.requestType)
-        .withLong(Timestamp.toString, invoiceTracking.timestamp)
-        .withString("trackingStatus", invoiceTracking.trackingStatus)
-
-      table.putItem(item)
-    } else {
-      logger.warn("DynamoDB table name not configured yet.")
-    }
+    InvoiceTracking(invoiceTrackingNumber, DELETE.toString, timestamp, invoiceId, None, None, None, None, None, INITIAL_INVOICE_TRACKING_STATUS)
   }
 }
