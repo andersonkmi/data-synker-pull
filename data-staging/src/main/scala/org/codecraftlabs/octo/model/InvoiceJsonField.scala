@@ -1,4 +1,4 @@
-package org.codecraftlabs.octo
+package org.codecraftlabs.octo.model
 
 object InvoiceJsonField extends Enumeration {
   val Amount: InvoiceJsonField.Value = Value(0, "amount")

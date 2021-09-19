@@ -1,4 +1,4 @@
-package org.codecraftlabs.octo
+package org.codecraftlabs.octo.model
 
 object RequestTypes extends Enumeration {
   type RequestType = Value

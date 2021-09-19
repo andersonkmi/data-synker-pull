@@ -1,4 +1,4 @@
-package org.codecraftlabs.octo
+package org.codecraftlabs.octo.model
 
 case class InvoiceTracking(invoiceTrackingNumber: Long,
                            requestType: String,
