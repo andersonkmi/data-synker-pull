@@ -28,3 +28,7 @@ The following configuration should be done for this lambda function:
 ### 2.3. Environment variables
 
 - DYNAMO_DB_TABLE: name of the table where the data will be stored.
+
+### 2.4. Trigger
+
+Set up a trigger for S3 events and point to the S3 bucket used by the data ingestion API.
