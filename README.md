@@ -8,7 +8,7 @@ This project is composed by 3 modukes:
 
 a) [Data ingestion API](data-ingestion-api/)
 
-b) Data stage system
+b) [Data stage system](data-staging/)
 
 c) Data updates API
 
@@ -29,7 +29,7 @@ Below you can see a diagram of the original design for this sandbox project:
 
 Here are the technologies used (so far):
 
-- AWS EC2, RDS (PostgreSQL), SQS, S3
+- AWS EC2, RDS (PostgreSQL), DynamoDB, AWS Lambda, S3
 - Gradle, Java 11, Spring Boot, Spring Boot Actuator, Spring Data JDBC
 - Docker
 - Gitflow
