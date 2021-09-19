@@ -1,10 +1,12 @@
-package org.codecraftlabs.octo
+package org.codecraftlabs.octo.service
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item}
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException
 import org.apache.log4j.{LogManager, Logger}
-import org.codecraftlabs.octo.InvoiceJsonField.{Amount, BillToName, CompanyName, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
+import org.codecraftlabs.octo.EnvironmentVariable
+import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
+import org.codecraftlabs.octo.model.InvoiceTracking
 
 import scala.util.Properties
 
@@ -50,7 +52,7 @@ object DynamoDbUtil {
       } catch {
         case exception: ResourceNotFoundException => logger.warn(s"DynamoDB table '${dynamoDBTable.get}' either does not exist or is incorrectly configured.", exception)
         case exception: Exception => logger.error(s"Failed to submit invoice tracking to DynamoDB: '${exception.getMessage}'.",
-                                                  exception)
+          exception)
       }
     } else {
       logger.warn("DynamoDB table name not configured yet.")
