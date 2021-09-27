@@ -1,10 +1,10 @@
 package org.codecraftlabs.octo.service
 
-import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.AmazonS3ClientBuilder.standard
 import com.amazonaws.services.s3.model.GetObjectRequest
 import org.apache.log4j.{LogManager, Logger}
 import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, Contents, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
-import org.codecraftlabs.octo.model.RequestTypes.{CREATE, DELETE, PATCH, UPDATE}
+import org.codecraftlabs.octo.model.RequestTypes.{CREATE, DELETE, PATCH, UPDATE, findByName}
 import org.codecraftlabs.octo.model.{InvoiceTracking, RequestTypes}
 import org.json.JSONObject
 
@@ -13,7 +13,7 @@ import java.io.{BufferedReader, InputStreamReader}
 object InvoiceReader {
   private val INITIAL_INVOICE_TRACKING_STATUS = "PENDING_SUBMISSION"
   private val logger: Logger = LogManager.getLogger(getClass)
-  private val s3Service = AmazonS3ClientBuilder.standard().build()
+  private val s3Service = standard().build()
 
   def readInvoiceTracking(bucket: String, key: String): Option[InvoiceTracking] = {
     logger.info("Starting S3 object processing")
@@ -25,9 +25,7 @@ object InvoiceReader {
 
     // loads all the lines into the buffer
     val buffer = new StringBuffer()
-    while ( {
-      line = reader.readLine; line != null
-    }) {
+    while ({line = reader.readLine; line != null}) {
       buffer.append(line)
     }
 
@@ -38,11 +36,11 @@ object InvoiceReader {
 
   private def extractJsonValues(json: JSONObject): Option[InvoiceTracking] = {
     val requestType = json.getString(RequestType.toString)
-    val request = RequestTypes.findByName(requestType)
+    val request = findByName(requestType)
 
     request match {
-      case CREATE => Some(extractInvoiceCreationJsonFields(json, CREATE))
-      case UPDATE => Some(extractInvoiceCreationJsonFields(json, UPDATE))
+      case CREATE => Some(extractInvoiceCreateOrUpdateJsonFields(json, CREATE))
+      case UPDATE => Some(extractInvoiceCreateOrUpdateJsonFields(json, UPDATE))
       case PATCH => Some(extractInvoicePatchJsonFields(json))
       case DELETE => Some(extractInvoiceDeleteJsonFields(json))
       case _ => None
@@ -56,7 +54,7 @@ object InvoiceReader {
     (timestamp, invoiceTrackingNumber, contents)
   }
 
-  private def extractInvoiceCreationJsonFields(json: JSONObject, requestType: RequestTypes.RequestType): InvoiceTracking = {
+  private def extractInvoiceCreateOrUpdateJsonFields(json: JSONObject, requestType: RequestTypes.RequestType): InvoiceTracking = {
     val baseJsonInformation = extractBaseInfo(json)
     val contents: JSONObject = baseJsonInformation._3
 

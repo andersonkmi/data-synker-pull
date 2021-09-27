@@ -1,12 +1,12 @@
 package org.codecraftlabs.octo.service
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder.standard
 import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item}
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException
 import org.apache.log4j.{LogManager, Logger}
-import org.codecraftlabs.octo.EnvironmentVariable
 import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
 import org.codecraftlabs.octo.model.InvoiceTracking
+import org.codecraftlabs.octo.service.EnvironmentVar.DynamoDbTable
 
 import scala.util.Properties
 
@@ -15,11 +15,10 @@ object DynamoDbUtil {
   private val TrackingStatusColumn: String = "trackingStatus"
 
   def putItem(invoiceTracking: InvoiceTracking): Unit = {
-    val dynamoDBTable: Option[String] = Properties.envOrNone(EnvironmentVariable.DynamoDbTable)
+    val dynamoDBTable: Option[String] = Properties.envOrNone(DynamoDbTable)
     if (dynamoDBTable.isDefined) {
       try {
-
-        val dynamoDbClient = AmazonDynamoDBClientBuilder.standard().build()
+        val dynamoDbClient = standard().build()
         val dynamoDB = new DynamoDB(dynamoDbClient)
         val table = dynamoDB.getTable(dynamoDBTable.get)
 
