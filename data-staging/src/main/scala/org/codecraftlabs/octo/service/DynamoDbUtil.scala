@@ -18,7 +18,6 @@ object DynamoDbUtil {
     val dynamoDBTable: Option[String] = Properties.envOrNone(EnvironmentVariable.DynamoDbTable)
     if (dynamoDBTable.isDefined) {
       try {
-
         val dynamoDbClient = AmazonDynamoDBClientBuilder.standard().build()
         val dynamoDB = new DynamoDB(dynamoDbClient)
         val table = dynamoDB.getTable(dynamoDBTable.get)

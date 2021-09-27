@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.GetObjectRequest
 import org.apache.log4j.{LogManager, Logger}
 import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, Contents, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
-import org.codecraftlabs.octo.model.RequestTypes.{CREATE, DELETE, PATCH, UPDATE}
+import org.codecraftlabs.octo.model.RequestTypes.{CREATE, DELETE, PATCH, UPDATE, findByName}
 import org.codecraftlabs.octo.model.{InvoiceTracking, RequestTypes}
 import org.json.JSONObject
 
@@ -25,9 +25,7 @@ object InvoiceReader {
 
     // loads all the lines into the buffer
     val buffer = new StringBuffer()
-    while ( {
-      line = reader.readLine; line != null
-    }) {
+    while ({line = reader.readLine; line != null}) {
       buffer.append(line)
     }
 
@@ -38,7 +36,7 @@ object InvoiceReader {
 
   private def extractJsonValues(json: JSONObject): Option[InvoiceTracking] = {
     val requestType = json.getString(RequestType.toString)
-    val request = RequestTypes.findByName(requestType)
+    val request = findByName(requestType)
 
     request match {
       case CREATE => Some(extractInvoiceCreationJsonFields(json, CREATE))
