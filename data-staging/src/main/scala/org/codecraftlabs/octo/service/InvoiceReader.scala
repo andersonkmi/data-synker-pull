@@ -41,7 +41,7 @@ object InvoiceReader {
     request match {
       case CREATE => Some(extractInvoiceCreateOrUpdateJsonFields(json, CREATE))
       case UPDATE => Some(extractInvoiceCreateOrUpdateJsonFields(json, UPDATE))
-      case PATCH => Some(extractInvoicePatchJsonFields(json))
+      case PATCH =>  Some(extractInvoicePatchJsonFields(json))
       case DELETE => Some(extractInvoiceDeleteJsonFields(json))
       case _ => None
     }
