@@ -25,9 +25,9 @@ class InvoiceProcessor extends RequestHandler [S3Event, String] {
     val invoiceTracking = readInvoiceTracking(bucket, key)
 
     invoiceTracking match {
-      case Some(invoiceTrackingItem) => logger.info(s"Invoice tracking record after parsing: '$invoiceTrackingItem'")
+      case Some(invoiceTrackingItem)  => logger.info(s"Invoice tracking record after parsing: '$invoiceTrackingItem'")
                                         putItem(invoiceTrackingItem)
-      case None => logger.info("No invoice tracking created.")
+      case None                       => logger.info("No invoice tracking created.")
     }
   }
 }
