@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.events.S3Event
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
 import org.apache.log4j.{LogManager, Logger}
-import org.codecraftlabs.octo.service.DynamoDbUtil.putItem
+import org.codecraftlabs.octo.service.DynamoDBService.putItem
 import org.codecraftlabs.octo.service.InvoiceReader.readInvoiceTracking
 
 import scala.jdk.CollectionConverters._
@@ -25,9 +25,9 @@ class InvoiceProcessor extends RequestHandler [S3Event, String] {
     val invoiceTracking = readInvoiceTracking(bucket, key)
 
     invoiceTracking match {
-      case Some(invoiceTrackingItem) => logger.info(s"Invoice tracking record after parsing: '$invoiceTrackingItem'")
+      case Some(invoiceTrackingItem)  => logger.info(s"Invoice tracking record after parsing: '$invoiceTrackingItem'")
                                         putItem(invoiceTrackingItem)
-      case None => logger.info("No invoice tracking created.")
+      case None                       => logger.info("No invoice tracking created.")
     }
   }
 }

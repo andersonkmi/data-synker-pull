@@ -1,19 +1,17 @@
-import sbtrelease.Version
 import Dependencies._
 import sbtassembly.Log4j2MergeStrategy
-
-ThisBuild / version := "0.0.1"
+import sbtrelease.Version
 
 resolvers += Resolver.sonatypeRepo("public")
 scalaVersion := "2.13.6"
 releaseNextVersion := { ver =>
   Version(ver).map(_.bumpMinor.string).getOrElse("Error")
 }
-assembly / assemblyJarName := "data-staging_0.0.1.jar"
 
 lazy val root = (project in file("."))
   .settings(
     name := "data-staging",
+    version := "1.0.0",
     libraryDependencies += scalaTest % Test,
     libraryDependencies += "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
     libraryDependencies += "com.amazonaws" % "aws-lambda-java-events" % "3.10.0",
@@ -22,7 +20,6 @@ lazy val root = (project in file("."))
     libraryDependencies += "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.62",
     libraryDependencies += "org.json" % "json" % "20210307"
   )
-
 
 scalacOptions ++= Seq(
   "-unchecked",

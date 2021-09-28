@@ -11,4 +11,5 @@ object InvoiceJsonField extends Enumeration {
   val RequestType: InvoiceJsonField.Value = Value(7, "requestType")
   val Status: InvoiceJsonField.Value = Value(8, "status")
   val Timestamp: InvoiceJsonField.Value = Value(9, "timestamp")
+  val InvoicePartition: InvoiceJsonField.Value = Value(10, "invoicePartition")
 }
