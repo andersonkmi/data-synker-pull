@@ -10,7 +10,7 @@ import org.codecraftlabs.octo.service.EnvironmentVar.DynamoDbTable
 
 import scala.util.Properties
 
-object DynamoDbUtil {
+object DynamoDBService {
   private val logger: Logger = LogManager.getLogger(getClass)
   private val TrackingStatusColumn: String = "trackingStatus"
 
