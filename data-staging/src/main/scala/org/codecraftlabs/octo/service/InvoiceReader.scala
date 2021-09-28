@@ -47,11 +47,12 @@ object InvoiceReader {
     }
   }
 
-  private def extractBaseInfo(json: JSONObject): (Long, Long, JSONObject) = {
+  private def extractBaseInfo(json: JSONObject): (Long, Long, JSONObject, String) = {
     val timestamp: Long = json.getLong(Timestamp.toString)
     val invoiceTrackingNumber: Long = json.getLong(InvoiceTrackingNumber.toString)
     val contents: JSONObject = json.getJSONObject(Contents.toString)
-    (timestamp, invoiceTrackingNumber, contents)
+    val partition = "Partition" + "%03d".format(invoiceTrackingNumber % 2 + 1)
+    (timestamp, invoiceTrackingNumber, contents, partition)
   }
 
   private def extractInvoiceCreateOrUpdateJsonFields(json: JSONObject, requestType: RequestTypes.RequestType): InvoiceTracking = {
@@ -64,7 +65,9 @@ object InvoiceReader {
     val companyName: String = contents.getString(CompanyName.toString)
     val billToName: String = contents.getString(BillToName.toString)
     val status: String = contents.getString(Status.toString)
-    InvoiceTracking(baseJsonInformation._2,
+    InvoiceTracking(
+      baseJsonInformation._4,
+      baseJsonInformation._2,
       requestType.toString,
       baseJsonInformation._1,
       invoiceId,
@@ -97,13 +100,35 @@ object InvoiceReader {
       status = Some(contents.getString(Status.toString))
     }
 
-    InvoiceTracking(baseJsonInformation._2, PATCH.toString, baseJsonInformation._1, invoiceId, name, amount, None, None, status, INITIAL_INVOICE_TRACKING_STATUS)
+    InvoiceTracking(
+      baseJsonInformation._4,
+      baseJsonInformation._2,
+      PATCH.toString,
+      baseJsonInformation._1,
+      invoiceId,
+      name,
+      amount,
+      None,
+      None,
+      status,
+      INITIAL_INVOICE_TRACKING_STATUS)
   }
 
   private def extractInvoiceDeleteJsonFields(json: JSONObject): InvoiceTracking = {
     val baseJsonInformation = extractBaseInfo(json)
     val contents: JSONObject = baseJsonInformation._3
     val invoiceId: String = contents.getString(InvoiceId.toString)
-    InvoiceTracking(baseJsonInformation._2, DELETE.toString, baseJsonInformation._1, invoiceId, None, None, None, None, None, INITIAL_INVOICE_TRACKING_STATUS)
+    InvoiceTracking(
+      baseJsonInformation._4,
+      baseJsonInformation._2,
+      DELETE.toString,
+      baseJsonInformation._1,
+      invoiceId,
+      None,
+      None,
+      None,
+      None,
+      None,
+      INITIAL_INVOICE_TRACKING_STATUS)
   }
 }

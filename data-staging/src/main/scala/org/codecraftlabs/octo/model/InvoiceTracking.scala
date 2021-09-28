@@ -1,6 +1,7 @@
 package org.codecraftlabs.octo.model
 
-case class InvoiceTracking(invoiceTrackingNumber: Long,
+case class InvoiceTracking(invoicePartition: String,
+                            invoiceTrackingNumber: Long,
                            requestType: String,
                            timestamp: Long,
                            invoiceId: String,

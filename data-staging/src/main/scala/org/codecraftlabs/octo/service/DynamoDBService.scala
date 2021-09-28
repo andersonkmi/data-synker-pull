@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder.standard
 import com.amazonaws.services.dynamodbv2.document.{DynamoDB, Item}
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException
 import org.apache.log4j.{LogManager, Logger}
-import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, InvoiceId, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
+import org.codecraftlabs.octo.model.InvoiceJsonField.{Amount, BillToName, CompanyName, InvoiceId, InvoicePartition, InvoiceTrackingNumber, Name, RequestType, Status, Timestamp}
 import org.codecraftlabs.octo.model.InvoiceTracking
 import org.codecraftlabs.octo.service.EnvironmentVar.DynamoDbTable
 
@@ -23,7 +23,8 @@ object DynamoDBService {
         val table = dynamoDB.getTable(dynamoDBTable.get)
 
         val item = new Item()
-          .withPrimaryKey(InvoiceTrackingNumber.toString, invoiceTracking.invoiceTrackingNumber)
+          .withPrimaryKey(InvoicePartition.toString, invoiceTracking.invoicePartition)
+          .withLong(InvoiceTrackingNumber.toString, invoiceTracking.invoiceTrackingNumber)
           .withString(InvoiceId.toString, invoiceTracking.invoiceId)
           .withString(RequestType.toString, invoiceTracking.requestType)
           .withLong(Timestamp.toString, invoiceTracking.timestamp)
